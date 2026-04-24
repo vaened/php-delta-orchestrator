@@ -1,0 +1,30 @@
+{
+  "name": "vaened/php-delta-orchestrator",
+  "description": "Framework-agnostic partial update orchestration engine based on real deltas",
+  "type": "library",
+  "license": "MIT",
+  "keywords": [
+    "php",
+    "delta",
+    "orchestrator",
+    "partial-update",
+    "patch",
+    "application-layer"
+  ],
+  "authors": [
+    {
+      "name": "enea dhack",
+      "email": "enea.so@live.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Vaened\\DeltaOrchestrator\\": "src/"
+    }
+  },
+  "require": {
+    "php": "^8.1"
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}
