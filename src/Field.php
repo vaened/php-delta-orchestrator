@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Vaened\DeltaOrchestrator;
 
 use Closure;
+use Vaened\DeltaOrchestrator\Bindings\Behavior;
 use Vaened\DeltaOrchestrator\Bindings\Optional;
 use Vaened\DeltaOrchestrator\Bindings\Required;
 use Vaened\DeltaOrchestrator\Comparison\Comparator;
@@ -17,7 +18,7 @@ use Vaened\DeltaOrchestrator\Comparison\Comparator;
  * @template TValue
  * @template TCurrent
  */
-final class Field
+final class Field implements Behavior
 {
     /**
      * @var LazyValue<TValue>
@@ -71,9 +72,19 @@ final class Field
         return $this->matches->get();
     }
 
+    public function satisfies(): bool
+    {
+        return $this->value() !== null;
+    }
+
     public function changed(): bool
     {
         return !$this->matches();
+    }
+
+    public function field(): Field
+    {
+        return $this;
     }
 
     public function required(): Required
