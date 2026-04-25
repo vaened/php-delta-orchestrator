@@ -82,6 +82,21 @@ final class Field implements Behavior
         return !$this->matches();
     }
 
+    /**
+     * @return Delta<TCurrent, TValue>|null
+     */
+    public function delta(): ?Delta
+    {
+        if (!$this->changed()) {
+            return null;
+        }
+
+        return new Delta(
+            previous: $this->current(),
+            next    : $this->value(),
+        );
+    }
+
     public function field(): Field
     {
         return $this;
