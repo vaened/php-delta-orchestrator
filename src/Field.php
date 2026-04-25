@@ -9,6 +9,8 @@ declare(strict_types=1);
 namespace Vaened\DeltaOrchestrator;
 
 use Closure;
+use Vaened\DeltaOrchestrator\Bindings\Optional;
+use Vaened\DeltaOrchestrator\Bindings\Required;
 use Vaened\DeltaOrchestrator\Comparison\Comparator;
 
 /**
@@ -72,6 +74,16 @@ final class Field
     public function changed(): bool
     {
         return !$this->matches();
+    }
+
+    public function required(): Required
+    {
+        return new Required($this);
+    }
+
+    public function optional(): Optional
+    {
+        return new Optional($this);
     }
 
     private function resolve(Comparator|Closure|null $comparator): callable
