@@ -18,6 +18,9 @@
     }
   ],
   "autoload": {
+    "files": [
+      "src/Rules/functions.php"
+    ],
     "psr-4": {
       "Vaened\\DeltaOrchestrator\\": "src/"
     }

@@ -1,0 +1,26 @@
+<?php
+/**
+ * @author enea dhack <contact@vaened.dev>
+ * @link https://vaened.dev DevFolio
+ */
+
+declare(strict_types=1);
+
+namespace Vaened\DeltaOrchestrator\Rules;
+
+use Vaened\DeltaOrchestrator\Field;
+
+function all(Rule ...$rules): All
+{
+    return new All($rules);
+}
+
+function any(Rule ...$rules): Any
+{
+    return new Any($rules);
+}
+
+function present(array|Field $fields): Present
+{
+    return new Present($fields);
+}
