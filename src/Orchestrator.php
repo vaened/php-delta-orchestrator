@@ -7,10 +7,14 @@
 declare(strict_types=1);
 
 namespace Vaened\DeltaOrchestrator;
-
 use Vaened\DeltaOrchestrator\Bindings\Behavior;
 use Vaened\DeltaOrchestrator\Exceptions\ActionBehaviorNotSatisfied;
 use Vaened\DeltaOrchestrator\Rules\Rule;
+
+use function array_map;
+use function call_user_func;
+use function Vaened\DeltaOrchestrator\Rules\any;
+use function Vaened\DeltaOrchestrator\Rules\present;
 
 final class Orchestrator
 {
@@ -39,30 +43,30 @@ final class Orchestrator
                 throw new ActionBehaviorNotSatisfied('Action behaviors were not satisfied.');
             }
 
-            ($action->apply())(...$fields);
+            if (!$this->passesChanges($fields)) {
+                continue;
+            }
+
+            call_user_func($action->apply(), ...$fields);
         }
     }
 
-    /**
-     * @param array<int, Field> $fields
-     */
     private function passesWhen(Action $action, array $fields): bool
     {
         $when = $action->when();
 
-        if ($when === null) {
-            return true;
+        if ($when !== null) {
+            /** @var Rule $rule */
+            $rule = $when(...$fields);
+
+            return $rule->satisfies();
         }
 
-        /** @var Rule $rule */
-        $rule = $when(...$fields);
-
-        return $rule->satisfies();
+        return any(
+            ...array_map(present(...), $fields),
+        )->satisfies();
     }
 
-    /**
-     * @param array<int, Field|Behavior> $fields
-     */
     private function passesBehaviors(array $fields): bool
     {
         foreach ($fields as $field) {
@@ -80,5 +84,16 @@ final class Orchestrator
             static fn(Field|Behavior $field): Field => $field->field(),
             $action->fields(),
         );
+    }
+
+    private function passesChanges(array $fields): bool
+    {
+        foreach ($fields as $field) {
+            if ($field->changed()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
