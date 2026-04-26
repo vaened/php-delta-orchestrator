@@ -27,7 +27,7 @@ final readonly class Present implements Rule
     public function satisfies(): bool
     {
         foreach ($this->fields as $field) {
-            if ($field->value() === null) {
+            if (!$field->isPresent()) {
                 return false;
             }
         }
