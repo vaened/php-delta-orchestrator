@@ -49,16 +49,16 @@ final class Schema
      * @template TValue
      * @template TCurrentValue
      *
-     * @param callable(TPayload): PatchValue<TValue> $value
-     * @param callable(TCurrent): TCurrentValue $current
-     * @param Comparator|callable(TValue, TCurrentValue): bool|null $compare
+     * @param Closure(TPayload): PatchValue<TValue> $value
+     * @param Closure(TCurrent): TCurrentValue $current
+     * @param Comparator|Closure(TValue, TCurrentValue): bool|null $compare
      *
      * @return Field<TValue, TCurrentValue>
      */
     public function define(
-        callable                 $value,
-        callable                 $current,
-        Comparator|callable|null $compare = null,
+        Closure                 $value,
+        Closure                 $current,
+        Comparator|Closure|null $compare = null,
     ): Field
     {
         return new Field(
