@@ -12,26 +12,14 @@ use Vaened\DeltaOrchestrator\Field;
 
 final readonly class Present implements Rule
 {
-    private array $fields;
-
-    /**
-     * @param array<int, Field>|Field $fields
-     */
     public function __construct(
-        array|Field $fields,
+        private Field $field,
     )
     {
-        $this->fields = $fields instanceof Field ? [$fields] : $fields;
     }
 
     public function satisfies(): bool
     {
-        foreach ($this->fields as $field) {
-            if (!$field->isPresent()) {
-                return false;
-            }
-        }
-
-        return true;
+        return $this->field->isPresent();
     }
 }

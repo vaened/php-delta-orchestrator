@@ -20,7 +20,7 @@ function any(Rule ...$rules): Any
     return new Any($rules);
 }
 
-function present(array|Field $fields): Present
+function present(Field $field): Present
 {
-    return new Present($fields);
+    return new Present($field);
 }
