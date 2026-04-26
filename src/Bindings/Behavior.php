@@ -10,8 +10,15 @@ namespace Vaened\DeltaOrchestrator\Bindings;
 
 use Vaened\DeltaOrchestrator\Field;
 
+/**
+ * @template TValue
+ * @template TCurrent
+ */
 interface Behavior
 {
+    /**
+     * @return Field<TValue, TCurrent>
+     */
     public function field(): Field;
 
     public function satisfies(): bool;

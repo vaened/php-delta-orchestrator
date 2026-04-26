@@ -18,6 +18,8 @@ use Vaened\DeltaOrchestrator\Patch\PatchValue;
 /**
  * @template TValue
  * @template TCurrent
+ *
+ * @implements Behavior<TValue, TCurrent>
  */
 final class Field implements Behavior
 {
@@ -98,16 +100,25 @@ final class Field implements Behavior
         );
     }
 
+    /**
+     * @return Field<TValue, TCurrent>
+     */
     public function field(): Field
     {
         return $this;
     }
 
+    /**
+     * @return Required<TValue, TCurrent>
+     */
     public function required(): Required
     {
         return new Required($this);
     }
 
+    /**
+     * @return Optional<TValue, TCurrent>
+     */
     public function optional(): Optional
     {
         return new Optional($this);

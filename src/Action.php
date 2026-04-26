@@ -16,8 +16,8 @@ final readonly class Action
 {
     /**
      * @param array<int, Field|Behavior> $fields
-     * @param Closure(Field ...$fields): Rule|null $when
      * @param Closure(Field ...$fields): mixed $apply
+     * @param (Closure(Field ...$fields): Rule)|null $when
      */
     public function __construct(
         private array    $fields,
@@ -35,11 +35,17 @@ final readonly class Action
         return $this->fields;
     }
 
+    /**
+     * @return Closure(Field ...$fields): mixed
+     */
     public function apply(): Closure
     {
         return $this->apply;
     }
 
+    /**
+     * @return (Closure(Field ...$fields): Rule)|null
+     */
     public function when(): ?Closure
     {
         return $this->when;
