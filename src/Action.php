@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Vaened\DeltaOrchestrator;
 
 use Closure;
+use InvalidArgumentException;
 use Vaened\DeltaOrchestrator\Bindings\Behavior;
 use Vaened\DeltaOrchestrator\Rules\Rule;
 
@@ -27,6 +28,9 @@ final readonly class Action
         private ?string  $description = null,
     )
     {
+        if ($this->fields === []) {
+            throw new InvalidArgumentException('Action fields cannot be empty.');
+        }
     }
 
     /**
