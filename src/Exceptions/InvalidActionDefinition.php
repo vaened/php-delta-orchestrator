@@ -8,6 +8,6 @@ declare(strict_types=1);
 
 namespace Vaened\DeltaOrchestrator\Exceptions;
 
-final class ActionBehaviorNotSatisfied extends DeltaOrchestratorException
+final class InvalidActionDefinition extends DeltaOrchestratorException
 {
 }
