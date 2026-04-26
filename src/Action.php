@@ -29,7 +29,10 @@ final readonly class Action
     )
     {
         if ($this->fields === []) {
-            throw new InvalidActionDefinition('Action fields cannot be empty.');
+            throw new InvalidActionDefinition(
+                reason     : 'Action fields cannot be empty',
+                description: $this->description,
+            );
         }
     }
 

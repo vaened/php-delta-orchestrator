@@ -39,7 +39,7 @@ final class Orchestrator
             }
 
             if (!$this->passesBehaviors($action->fields())) {
-                throw new ActionBehaviorNotSatisfied($this->message($action));
+                throw new ActionBehaviorNotSatisfied($action->description());
             }
 
             if (!$this->passesChanges($fields)) {
@@ -91,14 +91,5 @@ final class Orchestrator
         }
 
         return false;
-    }
-
-    private function message(Action $action): string
-    {
-        if ($action->description() !== null) {
-            return "Action behavior was not satisfied: {$action->description()}.";
-        }
-
-        return 'Action behavior was not satisfied.';
     }
 }

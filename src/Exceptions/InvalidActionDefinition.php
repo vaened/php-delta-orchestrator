@@ -10,4 +10,15 @@ namespace Vaened\DeltaOrchestrator\Exceptions;
 
 final class InvalidActionDefinition extends DeltaOrchestratorException
 {
+    public function __construct(
+        string  $reason,
+        ?string $description = null,
+    )
+    {
+        parent::__construct(
+            $description !== null
+                ? "Invalid action definition: $reason ($description)."
+                : "Invalid action definition: $reason.",
+        );
+    }
 }
