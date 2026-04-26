@@ -7,9 +7,9 @@
 declare(strict_types=1);
 
 namespace Vaened\DeltaOrchestrator;
+
 use Vaened\DeltaOrchestrator\Bindings\Behavior;
 use Vaened\DeltaOrchestrator\Exceptions\ActionBehaviorNotSatisfied;
-use Vaened\DeltaOrchestrator\Rules\Rule;
 
 use function array_map;
 use function call_user_func;
@@ -56,7 +56,6 @@ final class Orchestrator
         $when = $action->when();
 
         if ($when !== null) {
-            /** @var Rule $rule */
             $rule = $when(...$fields);
 
             return $rule->satisfies();
