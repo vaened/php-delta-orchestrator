@@ -13,6 +13,7 @@ use Vaened\DeltaOrchestrator\Bindings\Behavior;
 use Vaened\DeltaOrchestrator\Bindings\Optional;
 use Vaened\DeltaOrchestrator\Bindings\Required;
 use Vaened\DeltaOrchestrator\Comparison\Comparator;
+use Vaened\DeltaOrchestrator\Patch\PatchValue;
 
 /**
  * @template TValue
@@ -21,9 +22,9 @@ use Vaened\DeltaOrchestrator\Comparison\Comparator;
 final class Field implements Behavior
 {
     /**
-     * @var LazyValue<TValue>
+     * @var LazyValue<PatchValue<TValue>>
      */
-    private LazyValue $value;
+    private LazyValue $patch;
 
     /**
      * @var LazyValue<TCurrent>
@@ -36,7 +37,7 @@ final class Field implements Behavior
     private LazyValue $matches;
 
     /**
-     * @param Closure(): TValue $value
+     * @param Closure(): PatchValue<TValue> $value
      * @param Closure(): TCurrent $current
      * @param Comparator|Closure(TValue, TCurrent): bool|null $comparator
      */
@@ -46,7 +47,7 @@ final class Field implements Behavior
         Comparator|Closure|null $comparator = null,
     )
     {
-        $this->value   = new LazyValue($value);
+        $this->patch   = new LazyValue($value);
         $this->current = new LazyValue($current);
         $this->matches = new LazyValue($this->resolve($comparator));
     }
@@ -56,7 +57,7 @@ final class Field implements Behavior
      */
     public function value(): mixed
     {
-        return $this->value->get();
+        return $this->patch()->value();
     }
 
     /**
@@ -112,9 +113,26 @@ final class Field implements Behavior
         return new Optional($this);
     }
 
+    public function isPresent(): bool
+    {
+        return $this->patch()->isPresent();
+    }
+
+    /**
+     * @return PatchValue<TValue>
+     */
+    private function patch(): PatchValue
+    {
+        return $this->patch->get();
+    }
+
     private function resolve(Comparator|Closure|null $comparator): callable
     {
         return function () use ($comparator) {
+            if (!$this->isPresent()) {
+                return true;
+            }
+
             $value   = $this->value();
             $current = $this->current();
 

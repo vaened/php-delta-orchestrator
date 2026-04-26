@@ -10,6 +10,7 @@ namespace Vaened\DeltaOrchestrator;
 
 use Closure;
 use Vaened\DeltaOrchestrator\Comparison\Comparator;
+use Vaened\DeltaOrchestrator\Patch\PatchValue;
 
 /**
  * @template TPayload
@@ -46,10 +47,9 @@ final class Schema
 
     /**
      * @template TValue
-     *
      * @template TCurrentValue
      *
-     * @param callable(TPayload): TValue $value
+     * @param callable(TPayload): PatchValue<TValue> $value
      * @param callable(TCurrent): TCurrentValue $current
      * @param Comparator|callable(TValue, TCurrentValue): bool|null $compare
      *
