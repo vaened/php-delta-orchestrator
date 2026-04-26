@@ -38,8 +38,14 @@ final class Orchestrator
                 continue;
             }
 
-            if (!$this->passesBehaviors($action->fields())) {
-                throw new ActionBehaviorNotSatisfied($action->description());
+            $failingBehavior = $this->failingBehavior($action->fields());
+
+            if ($failingBehavior !== null) {
+                throw new ActionBehaviorNotSatisfied(
+                    behavior         : $failingBehavior,
+                    field            : $failingBehavior->field(),
+                    actionDescription: $action->description(),
+                );
             }
 
             if (!$this->passesChanges($fields)) {
@@ -63,15 +69,15 @@ final class Orchestrator
         return any($fields)->satisfies();
     }
 
-    private function passesBehaviors(array $fields): bool
+    private function failingBehavior(array $fields): ?Behavior
     {
         foreach ($fields as $field) {
             if ($field instanceof Behavior && !$field->satisfies()) {
-                return false;
+                return $field;
             }
         }
 
-        return true;
+        return null;
     }
 
     private function unwrap(Action $action): array
