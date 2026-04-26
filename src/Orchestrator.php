@@ -14,7 +14,6 @@ use Vaened\DeltaOrchestrator\Exceptions\ActionBehaviorNotSatisfied;
 use function array_map;
 use function call_user_func;
 use function Vaened\DeltaOrchestrator\Rules\any;
-use function Vaened\DeltaOrchestrator\Rules\present;
 
 final class Orchestrator
 {
@@ -61,9 +60,7 @@ final class Orchestrator
             return $rule->satisfies();
         }
 
-        return any(
-            ...array_map(present(...), $fields),
-        )->satisfies();
+        return any($fields)->satisfies();
     }
 
     private function passesBehaviors(array $fields): bool

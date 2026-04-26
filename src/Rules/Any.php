@@ -8,14 +8,25 @@ declare(strict_types=1);
 
 namespace Vaened\DeltaOrchestrator\Rules;
 
+use Vaened\DeltaOrchestrator\Field;
+
 final readonly class Any implements Rule
 {
+    use HasCompositeRules;
+
     /**
-     * @param array<int, Rule> $rules
+     * @var array<int, Rule>
+     */
+    private array $rules;
+
+    /**
+     * @param array<int, Field|Rule>|Field|Rule $rules
      */
     public function __construct(
-        private array $rules,
-    ) {
+        array|Field|Rule $rules,
+    )
+    {
+        $this->rules = $this->compositeRules($rules);
     }
 
     public function satisfies(): bool

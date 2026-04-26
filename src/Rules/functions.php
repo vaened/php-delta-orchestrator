@@ -10,12 +10,12 @@ namespace Vaened\DeltaOrchestrator\Rules;
 
 use Vaened\DeltaOrchestrator\Field;
 
-function all(Rule ...$rules): All
+function all(array|Field|Rule $rules): All
 {
     return new All($rules);
 }
 
-function any(Rule ...$rules): Any
+function any(array|Field|Rule $rules): Any
 {
     return new Any($rules);
 }
