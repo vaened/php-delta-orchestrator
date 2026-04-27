@@ -10,7 +10,7 @@ namespace Vaened\DeltaOrchestrator\Tests\Integration;
 
 use Vaened\DeltaOrchestrator\Action;
 use Vaened\DeltaOrchestrator\Exceptions\ActionBehaviorNotSatisfied;
-use Vaened\DeltaOrchestrator\Exceptions\StrictComparisonTypeMismatch;
+use Vaened\DeltaOrchestrator\Exceptions\ComparisonTypeMismatch;
 use Vaened\DeltaOrchestrator\Field;
 use Vaened\DeltaOrchestrator\Orchestrator;
 use Vaened\DeltaOrchestrator\Patch\StringPatchValue;
@@ -64,7 +64,7 @@ final class OrchestratorFailureTest extends TestCase
             when  : null,
         );
 
-        $this->expectException(StrictComparisonTypeMismatch::class);
+        $this->expectException(ComparisonTypeMismatch::class);
 
         (new Orchestrator())->register($action)->execute();
     }

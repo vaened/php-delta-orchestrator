@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Vaened\DeltaOrchestrator\Tests\Unit;
 
 use DateTimeImmutable;
-use Vaened\DeltaOrchestrator\Exceptions\StrictComparisonTypeMismatch;
+use Vaened\DeltaOrchestrator\Exceptions\ComparisonTypeMismatch;
 use Vaened\DeltaOrchestrator\Comparison\Comparator;
 use Vaened\DeltaOrchestrator\Tests\TestCase;
 
@@ -47,7 +47,7 @@ final class FieldTest extends TestCase
     {
         $field = $this->field(value: 10, current: 10.0);
 
-        $this->expectException(StrictComparisonTypeMismatch::class);
+        $this->expectException(ComparisonTypeMismatch::class);
 
         $field->matches();
     }
