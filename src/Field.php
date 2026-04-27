@@ -145,17 +145,15 @@ final class Field implements Behavior
                 return true;
             }
 
-            $value   = $this->value();
-            $current = $this->current();
+            $value      = $this->value();
+            $current    = $this->current();
             $comparator ??= StrictComparator::create();
-
-            if ($comparator instanceof Comparator) {
-                return $comparator->equals($value, $current);
-            }
 
             if ($comparator instanceof Closure) {
                 return ($comparator)($value, $current);
             }
+
+            return $comparator->equals($value, $current);
         };
     }
 }
