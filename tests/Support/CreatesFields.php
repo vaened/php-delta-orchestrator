@@ -22,7 +22,7 @@ trait CreatesFields
     ): Field
     {
         return new Field(
-            patch     : fn(): FakePatchValue => new FakePatchValue($present, $value),
+            patch     : new FakePatchValue($present, $value),
             current   : fn(): mixed => $current,
             comparator: $comparator,
         );

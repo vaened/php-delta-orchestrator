@@ -10,6 +10,7 @@ namespace Vaened\DeltaOrchestrator;
 
 use Closure;
 use Vaened\DeltaOrchestrator\Comparison\Comparator;
+use Vaened\DeltaOrchestrator\Exceptions\InvalidPatchValueProvided;
 use Vaened\DeltaOrchestrator\Patch\PatchValue;
 
 /**
@@ -61,8 +62,14 @@ final readonly class Schema
         Comparator|Closure|null $compare = null,
     ): Field
     {
+        $resolved = $patch($this->payload);
+
+        if (!$resolved instanceof PatchValue) {
+            throw new InvalidPatchValueProvided($resolved);
+        }
+
         return new Field(
-            patch     : fn(): mixed => $patch($this->payload),
+            patch     : $resolved,
             current   : fn(): mixed => $current($this->current),
             comparator: match (true) {
                 $compare instanceof Comparator,

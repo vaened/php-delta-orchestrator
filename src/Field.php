@@ -25,11 +25,6 @@ use Vaened\DeltaOrchestrator\Patch\PatchValue;
 final class Field implements Behavior
 {
     /**
-     * @var LazyValue<PatchValue<TValue>>
-     */
-    private LazyValue $patch;
-
-    /**
      * @var LazyValue<TCurrent>
      */
     private LazyValue $current;
@@ -40,17 +35,16 @@ final class Field implements Behavior
     private LazyValue $matches;
 
     /**
-     * @param Closure(): PatchValue<TValue> $patch
+     * @param PatchValue<TValue> $patch
      * @param Closure(): TCurrent $current
      * @param Comparator|Closure(TValue, TCurrent): bool|null $comparator
      */
     public function __construct(
-        Closure                 $patch,
-        Closure                 $current,
-        Comparator|Closure|null $comparator = null,
+        private readonly PatchValue $patch,
+        Closure                     $current,
+        Comparator|Closure|null     $comparator = null,
     )
     {
-        $this->patch   = new LazyValue($patch);
         $this->current = new LazyValue($current);
         $this->matches = new LazyValue($this->resolve($comparator));
     }
@@ -135,7 +129,7 @@ final class Field implements Behavior
      */
     private function patch(): PatchValue
     {
-        return $this->patch->get();
+        return $this->patch;
     }
 
     private function resolve(Comparator|Closure|null $comparator): callable

@@ -40,7 +40,7 @@ final class PatchInputTest extends TestCase
         self::assertNull($age->value());
     }
 
-    public function test_it_uses_received_keys_to_detect_presence(): void
+    public function test_it_uses_expected_keys_to_detect_presence(): void
     {
         $input = new PatchInput(
             input       : ['name' => 'Juan', 'age' => 20],
