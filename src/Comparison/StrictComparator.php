@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Vaened\DeltaOrchestrator\Comparison;
 
 use DateTimeInterface;
+use Vaened\DeltaOrchestrator\Exceptions\StrictComparisonTypeMismatch;
 
 final readonly class StrictComparator implements Comparator
 {
@@ -21,6 +22,10 @@ final readonly class StrictComparator implements Comparator
     {
         if ($value instanceof DateTimeInterface && $current instanceof DateTimeInterface) {
             return $value->format('Y-m-d H:i:s.uP') === $current->format('Y-m-d H:i:s.uP');
+        }
+
+        if (get_debug_type($value) !== get_debug_type($current)) {
+            throw new StrictComparisonTypeMismatch($value, $current);
         }
 
         return $value === $current;
