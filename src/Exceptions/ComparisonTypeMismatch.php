@@ -1,0 +1,32 @@
+<?php
+/**
+ * @author enea dhack <contact@vaened.dev>
+ * @link https://vaened.dev DevFolio
+ */
+
+declare(strict_types=1);
+
+namespace Vaened\DeltaOrchestrator\Exceptions;
+
+use function get_debug_type;
+
+final class ComparisonTypeMismatch extends DeltaOrchestratorException
+{
+    public static function forStrict(mixed $value, mixed $current): self
+    {
+        return new self(sprintf(
+            'Strict comparison requires matching types. Got <%s> and <%s>.',
+            get_debug_type($value),
+            get_debug_type($current),
+        ));
+    }
+
+    public static function forDateTime(mixed $value, mixed $current): self
+    {
+        return new self(sprintf(
+            'DateTime comparison requires DateTimeInterface or parseable date strings. Got <%s> and <%s>.',
+            get_debug_type($value),
+            get_debug_type($current),
+        ));
+    }
+}
