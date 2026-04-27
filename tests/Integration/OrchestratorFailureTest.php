@@ -30,9 +30,9 @@ final class OrchestratorFailureTest extends TestCase
 
         $action = new Action(
             fields      : [$field->required()],
-            when        : null,
             apply       : static function (Field ...$fields): void {
             },
+            when        : null,
             description : 'Update user profile',
         );
 
@@ -59,9 +59,9 @@ final class OrchestratorFailureTest extends TestCase
 
         $action = new Action(
             fields: [$field],
-            when  : null,
             apply : static function (Field ...$fields): void {
             },
+            when  : null,
         );
 
         $this->expectException(StrictComparisonTypeMismatch::class);

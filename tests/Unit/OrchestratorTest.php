@@ -26,11 +26,11 @@ final class OrchestratorTest extends TestCase
 
         $action = new Action(
             fields: [$this->field(value: 'Juan', present: false)],
-            when  : static function (Field $name): Rule {
-                return all([$name]);
-            },
             apply : static function (Field ...$fields) use (&$executed): void {
                 $executed = true;
+            },
+            when  : static function (Field $name): Rule {
+                return all([$name]);
             },
         );
 

@@ -36,10 +36,10 @@ final class ComparatorIntegrationTest extends TestCase
 
         $action = new Action(
             fields: [$field],
-            when  : null,
             apply : static function (Field ...$fields) use (&$executed): void {
                 $executed = true;
             },
+            when  : null,
         );
 
         (new Orchestrator())->register($action)->execute();
@@ -59,10 +59,10 @@ final class ComparatorIntegrationTest extends TestCase
 
         $action = new Action(
             fields: [$field],
-            when  : null,
             apply : static function (Field ...$fields) use (&$executed): void {
                 $executed = true;
             },
+            when  : null,
         );
 
         (new Orchestrator())->register($action)->execute();
@@ -82,10 +82,10 @@ final class ComparatorIntegrationTest extends TestCase
 
         $action = new Action(
             fields: [$field],
-            when  : null,
             apply : static function (Field ...$fields) use (&$executed): void {
                 $executed = true;
             },
+            when  : null,
         );
 
         (new Orchestrator())->register($action)->execute();
@@ -105,10 +105,10 @@ final class ComparatorIntegrationTest extends TestCase
 
         $action = new Action(
             fields: [$field],
-            when  : null,
             apply : static function (Field ...$fields) use (&$executed): void {
                 $executed = true;
             },
+            when  : null,
         );
 
         (new Orchestrator())->register($action)->execute();

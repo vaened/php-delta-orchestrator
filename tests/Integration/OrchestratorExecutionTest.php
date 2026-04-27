@@ -35,7 +35,6 @@ final class OrchestratorExecutionTest extends TestCase
 
         $action = new Action(
             fields      : [$name->required(), $age->required(), $birthday->optional()],
-            when        : static fn(Field ...$fields) => all($fields),
             apply       : static function (Field ...$fields) use (&$result): void {
                 [$name, $age, $birthday] = $fields;
 
@@ -45,6 +44,7 @@ final class OrchestratorExecutionTest extends TestCase
                     'birthday' => $birthday->delta()?->next()?->format('Y-m-d H:i:s'),
                 ];
             },
+            when        : static fn(Field ...$fields) => all($fields),
             description : 'Update profile',
         );
 
@@ -71,10 +71,10 @@ final class OrchestratorExecutionTest extends TestCase
 
         $action = new Action(
             fields: [$birthday],
-            when  : null,
             apply : static function (Field ...$fields) use (&$executed): void {
                 $executed = true;
             },
+            when  : null,
         );
 
         (new Orchestrator())->register($action)->execute();
@@ -99,10 +99,10 @@ final class OrchestratorExecutionTest extends TestCase
 
         $action = new Action(
             fields: [$name],
-            when  : null,
             apply : static function (Field ...$fields) use (&$executed): void {
                 $executed = true;
             },
+            when  : null,
         );
 
         (new Orchestrator())->register($action)->execute();
@@ -120,18 +120,18 @@ final class OrchestratorExecutionTest extends TestCase
         $orchestrator = (new Orchestrator())
             ->register(new Action(
                 fields      : [$first],
-                when        : null,
                 apply       : static function (Field ...$fields) use (&$executed): void {
                     $executed[] = 'first';
                 },
+                when        : null,
                 description : 'First action',
             ))
             ->register(new Action(
                 fields      : [$second],
-                when        : null,
                 apply       : static function (Field ...$fields) use (&$executed): void {
                     $executed[] = 'second';
                 },
+                when        : null,
                 description : 'Second action',
             ));
 
@@ -156,13 +156,13 @@ final class OrchestratorExecutionTest extends TestCase
 
         $action = new Action(
             fields: [$name->optional(), $age->required()],
+            apply : static function (Field ...$fields) use (&$executed): void {
+                $executed = true;
+            },
             when  : static function (Field ...$fields) {
                 [$name, $age] = $fields;
 
                 return any([$name, $age]);
-            },
-            apply : static function (Field ...$fields) use (&$executed): void {
-                $executed = true;
             },
         );
 
