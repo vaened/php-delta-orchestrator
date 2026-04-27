@@ -22,20 +22,16 @@ final readonly class DateTimeComparator implements Comparator
 
     public function equals(mixed $value, mixed $current): bool
     {
-        $value = $this->normalize($value, $current);
+        $value   = $this->normalize($value, $current);
         $current = $this->normalize($current, $value);
 
         return $value->format('Y-m-d H:i:s.uP') === $current->format('Y-m-d H:i:s.uP');
     }
 
-    private function normalize(mixed $value, mixed $other): DateTimeImmutable
+    private function normalize(mixed $value, mixed $other): DateTimeInterface
     {
-        if ($value instanceof DateTimeImmutable) {
-            return $value;
-        }
-
         if ($value instanceof DateTimeInterface) {
-            return DateTimeImmutable::createFromInterface($value);
+            return $value;
         }
 
         if (is_string($value)) {
