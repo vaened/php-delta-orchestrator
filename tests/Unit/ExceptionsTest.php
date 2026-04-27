@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace Vaened\DeltaOrchestrator\Tests\Unit;
 
 use Vaened\DeltaOrchestrator\Exceptions\ActionBehaviorNotSatisfied;
+use Vaened\DeltaOrchestrator\Exceptions\ComparisonTypeMismatch;
 use Vaened\DeltaOrchestrator\Exceptions\InvalidActionDefinition;
-use Vaened\DeltaOrchestrator\Exceptions\StrictComparisonTypeMismatch;
 use Vaened\DeltaOrchestrator\Tests\TestCase;
 
 final class ExceptionsTest extends TestCase
@@ -51,10 +51,20 @@ final class ExceptionsTest extends TestCase
 
     public function test_strict_comparison_type_mismatch_builds_message(): void
     {
-        $exception = new StrictComparisonTypeMismatch('10', 10);
+        $exception = ComparisonTypeMismatch::forStrict('10', 10);
 
         self::assertSame(
             'Strict comparison requires matching types. Got <string> and <int>.',
+            $exception->getMessage(),
+        );
+    }
+
+    public function test_datetime_comparison_type_mismatch_builds_message(): void
+    {
+        $exception = ComparisonTypeMismatch::forDateTime('not-a-date', 10);
+
+        self::assertSame(
+            'DateTime comparison requires DateTimeInterface or parseable date strings. Got <string> and <int>.',
             $exception->getMessage(),
         );
     }

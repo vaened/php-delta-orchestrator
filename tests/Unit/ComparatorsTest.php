@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Vaened\DeltaOrchestrator\Tests\Unit;
 
 use DateTimeImmutable;
-use Vaened\DeltaOrchestrator\Exceptions\StrictComparisonTypeMismatch;
+use Vaened\DeltaOrchestrator\Exceptions\ComparisonTypeMismatch;
 use Vaened\DeltaOrchestrator\Comparison\DateTimeComparator;
 use Vaened\DeltaOrchestrator\Comparison\LooseComparator;
 use Vaened\DeltaOrchestrator\Comparison\NumericComparator;
@@ -29,7 +29,7 @@ final class ComparatorsTest extends TestCase
     {
         $comparator = StrictComparator::create();
 
-        $this->expectException(StrictComparisonTypeMismatch::class);
+        $this->expectException(ComparisonTypeMismatch::class);
 
         $comparator->equals('10', 10);
     }
@@ -83,6 +83,16 @@ final class ComparatorsTest extends TestCase
 
         self::assertTrue($comparator->equals($value, $current));
         self::assertFalse($comparator->equals($value, $other));
-        self::assertFalse($comparator->equals('2026-04-26 10:20:30', $current));
+        self::assertTrue($comparator->equals('2026-04-26 10:20:30', $current));
+        self::assertTrue($comparator->equals('2026-04-26 10:20:30', '2026-04-26 10:20:30'));
+    }
+
+    public function test_datetime_comparator_throws_when_values_are_not_comparable_as_dates(): void
+    {
+        $comparator = DateTimeComparator::create();
+
+        $this->expectException(ComparisonTypeMismatch::class);
+
+        $comparator->equals('not-a-date', 10);
     }
 }
