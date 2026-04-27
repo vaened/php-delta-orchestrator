@@ -54,7 +54,7 @@ final class ExceptionsTest extends TestCase
         $exception = new StrictComparisonTypeMismatch('10', 10);
 
         self::assertSame(
-            'Strict comparison requires matching types. Got [string] and [int].',
+            'Strict comparison requires matching types. Got <string> and <int>.',
             $exception->getMessage(),
         );
     }
