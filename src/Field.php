@@ -13,6 +13,7 @@ use Vaened\DeltaOrchestrator\Bindings\Behavior;
 use Vaened\DeltaOrchestrator\Bindings\Optional;
 use Vaened\DeltaOrchestrator\Bindings\Required;
 use Vaened\DeltaOrchestrator\Comparison\Comparator;
+use Vaened\DeltaOrchestrator\Comparison\StrictComparator;
 use Vaened\DeltaOrchestrator\Patch\PatchValue;
 
 /**
@@ -146,6 +147,7 @@ final class Field implements Behavior
 
             $value   = $this->value();
             $current = $this->current();
+            $comparator ??= StrictComparator::create();
 
             if ($comparator instanceof Comparator) {
                 return $comparator->equals($value, $current);
@@ -154,8 +156,6 @@ final class Field implements Behavior
             if ($comparator instanceof Closure) {
                 return ($comparator)($value, $current);
             }
-
-            return $value === $current;
         };
     }
 }

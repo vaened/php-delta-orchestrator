@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace Vaened\DeltaOrchestrator\Tests\Unit;
 
+use DateTimeImmutable;
+use Vaened\DeltaOrchestrator\Exceptions\StrictComparisonTypeMismatch;
 use Vaened\DeltaOrchestrator\Comparison\Comparator;
 use Vaened\DeltaOrchestrator\Tests\TestCase;
 
@@ -39,6 +41,26 @@ final class FieldTest extends TestCase
         self::assertTrue($field->matches());
         self::assertFalse($field->changed());
         self::assertNull($field->delta());
+    }
+
+    public function test_it_uses_strict_comparator_by_default(): void
+    {
+        $field = $this->field(value: 10, current: 10.0);
+
+        $this->expectException(StrictComparisonTypeMismatch::class);
+
+        $field->matches();
+    }
+
+    public function test_it_uses_default_strict_datetime_comparison(): void
+    {
+        $field = $this->field(
+            value  : new DateTimeImmutable('2026-04-26 10:20:30.123456+00:00'),
+            current: new DateTimeImmutable('2026-04-26 10:20:30.123456+00:00'),
+        );
+
+        self::assertTrue($field->matches());
+        self::assertFalse($field->changed());
     }
 
     public function test_it_builds_delta_when_value_changes(): void
