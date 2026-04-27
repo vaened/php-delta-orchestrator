@@ -49,20 +49,20 @@ final readonly class Schema
      * @template TValue
      * @template TCurrentValue
      *
-     * @param Closure(TPayload): PatchValue<TValue> $value
+     * @param Closure(TPayload): PatchValue<TValue> $patch
      * @param Closure(TCurrent): TCurrentValue $current
      * @param Comparator|Closure(TValue, TCurrentValue): bool|null $compare
      *
      * @return Field<TValue, TCurrentValue>
      */
     public function define(
-        Closure                 $value,
+        Closure                 $patch,
         Closure                 $current,
         Comparator|Closure|null $compare = null,
     ): Field
     {
         return new Field(
-            value     : fn(): mixed => $value($this->payload),
+            patch     : fn(): mixed => $patch($this->payload),
             current   : fn(): mixed => $current($this->current),
             comparator: match (true) {
                 $compare instanceof Comparator,

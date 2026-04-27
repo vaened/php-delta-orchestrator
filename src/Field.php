@@ -40,17 +40,17 @@ final class Field implements Behavior
     private LazyValue $matches;
 
     /**
-     * @param Closure(): PatchValue<TValue> $value
+     * @param Closure(): PatchValue<TValue> $patch
      * @param Closure(): TCurrent $current
      * @param Comparator|Closure(TValue, TCurrent): bool|null $comparator
      */
     public function __construct(
-        Closure                 $value,
+        Closure                 $patch,
         Closure                 $current,
         Comparator|Closure|null $comparator = null,
     )
     {
-        $this->patch   = new LazyValue($value);
+        $this->patch   = new LazyValue($patch);
         $this->current = new LazyValue($current);
         $this->matches = new LazyValue($this->resolve($comparator));
     }

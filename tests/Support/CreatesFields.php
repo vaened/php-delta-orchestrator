@@ -15,14 +15,14 @@ use Vaened\DeltaOrchestrator\Field;
 trait CreatesFields
 {
     protected function field(
-        mixed $value,
-        mixed $current = null,
-        bool $present = true,
+        mixed                   $value,
+        mixed                   $current = null,
+        bool                    $present = true,
         Comparator|Closure|null $comparator = null,
     ): Field
     {
         return new Field(
-            value     : fn(): FakePatchValue => new FakePatchValue($present, $value),
+            patch     : fn(): FakePatchValue => new FakePatchValue($present, $value),
             current   : fn(): mixed => $current,
             comparator: $comparator,
         );
