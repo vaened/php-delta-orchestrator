@@ -1,7 +1,7 @@
 # PHP Delta Orchestrator
 
 **php-delta-orchestrator** is a library for orchestrating partial updates by comparing incoming input against the current state, producing a
-delta and executing actions only when appropriate.
+[`Delta`](src/Delta.php) and executing [`Action`](src/Action.php) instances only when appropriate.
 
 ```php
 // Patch + current state
@@ -62,10 +62,10 @@ The core issue is that this approach mixes in the same place:
 
 An explicit flow is introduced where each responsibility is clearly separated:
 
-* `PatchValue` models input presence and normalization,
-* `Field` evaluates changes against the current state,
-* `Delta` represents an effective transition,
-* `Action` defines when and how to execute logic.
+* [`PatchValue`](src/Patch/PatchValue.php) models input presence and normalization,
+* [`Field`](src/Field.php) evaluates changes against the current state,
+* [`Delta`](src/Delta.php) represents an effective transition,
+* [`Action`](src/Action.php) defines when and how to execute logic.
 
 ## Conceptual model
 
@@ -104,7 +104,7 @@ final readonly class UpdateAvailabilityCommand
 }
 ```
 
-#### Option B: From array using `PatchInput`
+#### Option B: From array using [`PatchInput`](src/Patch/PatchInput.php)
 
 ```php
 $input = new PatchInput(
@@ -123,8 +123,8 @@ $endDate   = $input->dateTimeImmutable('end_date');
 
 ### 2) Define fields
 
-You connect the patch with the current state. Each `patch` represents a `PatchValue`, not the final value, so the incoming value may differ
-in type from the current state.
+You connect the patch with the current state using [`Schema`](src/Schema.php). Each `patch` represents a `PatchValue`, not the final value,
+so the incoming value may differ in type from the current state.
 
 ```php
 $schema = new Schema($payload, $availability);
@@ -145,7 +145,7 @@ $endDate = $schema->define(
 );
 ```
 
-Each `Field` exposes:
+Each [`Field`](src/Field.php) exposes:
 
 * `isPresent()` → whether the field was provided in the patch
 * `value()` → incoming value
@@ -154,7 +154,7 @@ Each `Field` exposes:
 
 ### 3) Declare actions
 
-You define what should happen when a combination of fields applies.
+You define what should happen when a combination of fields applies through an [`Action`](src/Action.php).
 
 ```php
 $orchestrator->register(new Action(
@@ -169,7 +169,7 @@ $orchestrator->register(new Action(
 
 #### Behaviors
 
-Behaviors define the execution contract:
+Behaviors define the execution contract through [`Required`](src/Bindings/Required.php) and [`Optional`](src/Bindings/Optional.php):
 
 ```php
 fields: [
@@ -199,7 +199,7 @@ when: static fn(Field ...$fields) => all($fields)
 $orchestrator->execute();
 ```
 
-The `Orchestrator` performs:
+The [`Orchestrator`](src/Orchestrator.php) performs:
 
 1. Evaluates `when` (presence-based activation)
 2. Validates the contract (`behaviors`)
@@ -220,7 +220,7 @@ This allows you to control type handling, normalization, and domain rules.
 
 ## Rules
 
-Rules allow you to declaratively define activation conditions (`when`).
+Rules allow you to declaratively define activation conditions (`when`) through helpers in [`src/Rules/functions.php`](src/Rules/functions.php).
 
 ### present()
 
@@ -321,7 +321,7 @@ $value = $schema->define(
 
 ### PatchValue and normalization
 
-Concrete `PatchValue` implementations can accept flexible inputs and return normalized values.
+Concrete [`PatchValue`](src/Patch/PatchValue.php) implementations can accept flexible inputs and return normalized values.
 
 ```php
 new IntPatchValue(true, '20')->value();
@@ -333,7 +333,7 @@ This keeps normalization at the input boundary, preventing raw values from leaki
 
 ## Playground
 
-The repository includes an executable usage scenario located at `playground/playground.php`.
+The repository includes an executable usage scenario located at [`playground/playground.php`](playground/playground.php).
 
 Unlike the snippets in the README, this example brings multiple cases together in a single flow:
 
@@ -355,6 +355,6 @@ make playground
 
 ## Additional documentation
 
-You can find more details in the source code as well as in the tests located in the `tests/` directory.
+You can find more details in the source code as well as in the tests located in [`tests/`](tests/).
 
 The tests cover different usage scenarios and can serve as additional reference for understanding the library’s behavior.
