@@ -25,6 +25,18 @@ final class ComparatorsTest extends TestCase
         self::assertFalse($comparator->equals('10', 10));
     }
 
+    public function test_strict_comparator_compares_datetimes_by_exact_temporal_value(): void
+    {
+        $comparator = StrictComparator::create();
+
+        $sameA = new DateTimeImmutable('2026-04-26 10:20:30.123456+00:00');
+        $sameB = new DateTimeImmutable('2026-04-26 10:20:30.123456+00:00');
+        $other = new DateTimeImmutable('2026-04-26 10:20:30.123457+00:00');
+
+        self::assertTrue($comparator->equals($sameA, $sameB));
+        self::assertFalse($comparator->equals($sameA, $other));
+    }
+
     public function test_numeric_comparator_compares_numeric_values_semantically(): void
     {
         $comparator = NumericComparator::create();
