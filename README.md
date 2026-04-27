@@ -1,5 +1,8 @@
 # PHP Delta Orchestrator
 
+[![Tests](https://github.com/vaened/php-delta-orchestrator/actions/workflows/test.yml/badge.svg)](https://github.com/vaened/php-delta-orchestrator/actions/workflows/test.yml)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
+
 **php-delta-orchestrator** is a library for orchestrating partial updates by comparing incoming input against the current state, producing a
 [`Delta`](src/Delta.php) and executing [`Action`](src/Action.php) instances only when appropriate.
 
@@ -220,7 +223,8 @@ This allows you to control type handling, normalization, and domain rules.
 
 ## Rules
 
-Rules allow you to declaratively define activation conditions (`when`) through helpers in [`src/Rules/functions.php`](src/Rules/functions.php).
+Rules allow you to declaratively define activation conditions (`when`) through helpers in [
+`src/Rules/functions.php`](src/Rules/functions.php).
 
 ### present()
 
@@ -355,6 +359,6 @@ make playground
 
 ## Additional documentation
 
-You can find more details in the source code as well as in the tests located in [`tests/`](tests/).
+You can find more details in the source code as well as in the tests located in [`tests/`](tests).
 
 The tests cover different usage scenarios and can serve as additional reference for understanding the library’s behavior.
