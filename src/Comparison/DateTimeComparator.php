@@ -8,7 +8,10 @@ declare(strict_types=1);
 
 namespace Vaened\DeltaOrchestrator\Comparison;
 
+use DateTimeImmutable;
 use DateTimeInterface;
+use Exception;
+use Vaened\DeltaOrchestrator\Exceptions\ComparisonTypeMismatch;
 
 final readonly class DateTimeComparator implements Comparator
 {
@@ -19,10 +22,30 @@ final readonly class DateTimeComparator implements Comparator
 
     public function equals(mixed $value, mixed $current): bool
     {
-        if (!$value instanceof DateTimeInterface || !$current instanceof DateTimeInterface) {
-            return false;
+        $value = $this->normalize($value, $current);
+        $current = $this->normalize($current, $value);
+
+        return $value->format('Y-m-d H:i:s.uP') === $current->format('Y-m-d H:i:s.uP');
+    }
+
+    private function normalize(mixed $value, mixed $other): DateTimeImmutable
+    {
+        if ($value instanceof DateTimeImmutable) {
+            return $value;
         }
 
-        return $value == $current;
+        if ($value instanceof DateTimeInterface) {
+            return DateTimeImmutable::createFromInterface($value);
+        }
+
+        if (is_string($value)) {
+            try {
+                return new DateTimeImmutable($value);
+            } catch (Exception) {
+                throw ComparisonTypeMismatch::forDateTime($value, $other);
+            }
+        }
+
+        throw ComparisonTypeMismatch::forDateTime($value, $other);
     }
 }
