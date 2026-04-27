@@ -11,7 +11,6 @@ $startDate = $schema->define(
     // incoming patch vs current value
     patch  : fn(UpdateAvailabilityCommand $payload) => $payload->startDate,
     current: fn(Availability $current) => $current->startDate,
-
 );
 
 $endDate = $schema->define(
