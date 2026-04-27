@@ -37,3 +37,7 @@ test: composer-install
 .PHONY: lint
 lint: build
 	docker run --rm -v $(PWD):/app -w /app $(IMAGE) sh -lc 'find . -name "*.php" -not -path "./vendor/*" -print0 | xargs -0 -n1 php -l'
+
+.PHONY: playground
+playground: composer-install
+	docker run --rm -v $(PWD):/app -w /app $(IMAGE) php playground/playground.php
