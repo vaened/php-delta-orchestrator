@@ -16,7 +16,7 @@ use Vaened\DeltaOrchestrator\Patch\PatchValue;
  * @template TPayload
  * @template TCurrent
  */
-final class Schema
+final readonly class Schema
 {
     /**
      * @param TPayload $payload
