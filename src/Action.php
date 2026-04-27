@@ -17,14 +17,14 @@ final readonly class Action
 {
     /**
      * @param array<int, Field|Behavior> $fields
-     * @param Closure(Field ...$fields): mixed $apply
      * @param (Closure(Field ...$fields): Rule)|null $when
+     * @param Closure(Field ...$fields): mixed $apply
      * @param string|null $description
      */
     public function __construct(
         private array    $fields,
-        private Closure  $apply,
         private ?Closure $when = null,
+        private Closure  $apply,
         private ?string  $description = null,
     )
     {
