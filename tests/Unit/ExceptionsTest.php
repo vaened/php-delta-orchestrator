@@ -10,6 +10,7 @@ namespace Vaened\DeltaOrchestrator\Tests\Unit;
 
 use Vaened\DeltaOrchestrator\Exceptions\ActionBehaviorNotSatisfied;
 use Vaened\DeltaOrchestrator\Exceptions\InvalidActionDefinition;
+use Vaened\DeltaOrchestrator\Exceptions\StrictComparisonTypeMismatch;
 use Vaened\DeltaOrchestrator\Tests\TestCase;
 
 final class ExceptionsTest extends TestCase
@@ -46,5 +47,15 @@ final class ExceptionsTest extends TestCase
         );
 
         self::assertSame('Action behavior was not satisfied.', $exception->getMessage());
+    }
+
+    public function test_strict_comparison_type_mismatch_builds_message(): void
+    {
+        $exception = new StrictComparisonTypeMismatch('10', 10);
+
+        self::assertSame(
+            'Strict comparison requires matching types. Got [string] and [int].',
+            $exception->getMessage(),
+        );
     }
 }

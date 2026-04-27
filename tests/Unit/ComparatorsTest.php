@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Vaened\DeltaOrchestrator\Tests\Unit;
 
 use DateTimeImmutable;
+use Vaened\DeltaOrchestrator\Exceptions\StrictComparisonTypeMismatch;
 use Vaened\DeltaOrchestrator\Comparison\DateTimeComparator;
 use Vaened\DeltaOrchestrator\Comparison\LooseComparator;
 use Vaened\DeltaOrchestrator\Comparison\NumericComparator;
@@ -22,7 +23,15 @@ final class ComparatorsTest extends TestCase
         $comparator = StrictComparator::create();
 
         self::assertTrue($comparator->equals('10', '10'));
-        self::assertFalse($comparator->equals('10', 10));
+    }
+
+    public function test_strict_comparator_throws_when_types_do_not_match(): void
+    {
+        $comparator = StrictComparator::create();
+
+        $this->expectException(StrictComparisonTypeMismatch::class);
+
+        $comparator->equals('10', 10);
     }
 
     public function test_strict_comparator_compares_datetimes_by_exact_temporal_value(): void
