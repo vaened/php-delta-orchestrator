@@ -137,10 +137,20 @@ You can optionally define a comparator:
 
 ```php
 $endDate = Field::from(
-    patch     : $payload->endDate,
-    current   : $availability->endDate,
-    comparator: DateTimeComparator::create(),
-);
+    patch  : $payload->endDate,
+    current: $availability->endDate,
+)->compare(DateTimeComparator::create());
+```
+
+You can also transform the incoming patch value before comparison and action execution:
+
+```php
+$name = Field::from(
+    patch  : $payload->name,
+    current: $current->name,
+)
+    ->transform(static fn(string $value): string => strtolower(trim($value)))
+    ->compare(StrictComparator::create());
 ```
 
 Each [`Field`](src/Field.php) exposes:
@@ -286,10 +296,9 @@ For numeric values and numeric strings.
 
 ```php
 $quantity = Field::from(
-    patch     : $payload->quantity,
-    current   : $current->quantity,
-    comparator: NumericComparator::create(),
-);
+    patch  : $payload->quantity,
+    current: $current->quantity,
+)->compare(NumericComparator::create());
 ```
 
 #### DateTimeComparator
@@ -298,10 +307,9 @@ For date comparisons with explicit semantics.
 
 ```php
 $startDate = Field::from(
-    patch     : $payload->startDate,
-    current   : $current->startDate,
-    comparator: DateTimeComparator::create(),
-);
+    patch  : $payload->startDate,
+    current: $current->startDate,
+)->compare(DateTimeComparator::create());
 ```
 
 #### LooseComparator
@@ -310,10 +318,9 @@ For cases where intentional loose comparison (`==`) is desired.
 
 ```php
 $value = Field::from(
-    patch     : $payload->value,
-    current   : $current->value,
-    comparator: LooseComparator::create(),
-);
+    patch  : $payload->value,
+    current: $current->value,
+)->compare(LooseComparator::create());
 ```
 
 #### ArrayComparator
@@ -322,20 +329,18 @@ For recursive array comparisons, with support for injecting an item comparator.
 
 ```php
 $settings = Field::from(
-    patch     : $payload->settings,
-    current   : $current->settings,
-    comparator: ArrayComparator::create(),
-);
+    patch  : $payload->settings,
+    current: $current->settings,
+)->compare(ArrayComparator::create());
 ```
 
 You can also provide a custom comparator for leaf values:
 
 ```php
 $settings = Field::from(
-    patch     : $payload->settings,
-    current   : $current->settings,
-    comparator: ArrayComparator::create(LooseComparator::create()),
-);
+    patch  : $payload->settings,
+    current: $current->settings,
+)->compare(ArrayComparator::create(LooseComparator::create()));
 ```
 
 ## Patch (input)
