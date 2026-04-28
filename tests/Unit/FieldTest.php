@@ -92,4 +92,15 @@ final class FieldTest extends TestCase
         self::assertFalse($field->changed());
         self::assertNull($field->delta());
     }
+
+    public function test_it_transforms_value_before_comparison_and_delta(): void
+    {
+        $field = $this->field(value: '  PEDRO  ', current: 'pedro')
+            ->transform(static fn(string $value): string => strtolower(trim($value)));
+
+        self::assertSame('pedro', $field->value());
+        self::assertTrue($field->matches());
+        self::assertFalse($field->changed());
+        self::assertNull($field->delta());
+    }
 }

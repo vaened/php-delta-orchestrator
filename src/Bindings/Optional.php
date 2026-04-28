@@ -12,14 +12,15 @@ use Vaened\DeltaOrchestrator\Field;
 
 /**
  * @template TValue
+ * @template TResolved
  * @template TCurrent
  *
- * @implements Behavior<TValue, TCurrent>
+ * @implements Behavior<TValue, TResolved, TCurrent>
  */
 final readonly class Optional implements Behavior
 {
     /**
-     * @param Field<TValue, TCurrent> $field
+     * @param Field<TValue, TResolved, TCurrent> $field
      */
     public function __construct(
         private Field $field,
@@ -27,7 +28,7 @@ final readonly class Optional implements Behavior
     }
 
     /**
-     * @return Field<TValue, TCurrent>
+     * @return Field<TValue, TResolved, TCurrent>
      */
     public function field(): Field
     {

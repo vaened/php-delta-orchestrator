@@ -12,12 +12,13 @@ use Vaened\DeltaOrchestrator\Field;
 
 /**
  * @template TValue
+ * @template TResolved
  * @template TCurrent
  */
 interface Behavior
 {
     /**
-     * @return Field<TValue, TCurrent>
+     * @return Field<TValue, TResolved, TCurrent>
      */
     public function field(): Field;
 

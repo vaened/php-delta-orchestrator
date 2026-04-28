@@ -18,9 +18,10 @@ use Vaened\DeltaOrchestrator\Patch\PatchValue;
 
 /**
  * @template TValue
+ * @template TResolved
  * @template TCurrent
  *
- * @implements Behavior<TValue, TCurrent>
+ * @implements Behavior<TValue, TResolved, TCurrent>
  */
 final class Field implements Behavior
 {
@@ -35,9 +36,24 @@ final class Field implements Behavior
     private LazyValue $matches;
 
     /**
+     * @var LazyValue<TResolved>
+     */
+    private LazyValue $value;
+
+    /**
+     * @var Closure(TValue): TResolved
+     */
+    private Closure $transformer;
+
+    /**
+     * @param Comparator|Closure(TResolved, TCurrent): bool|null $comparator
+     */
+    private Comparator|Closure|null $comparator;
+
+    /**
      * @param PatchValue<TValue> $patch
      * @param TCurrent|Closure(): TCurrent $current
-     * @param Comparator|Closure(TValue, TCurrent): bool|null $comparator
+     * @param Comparator|Closure(TResolved, TCurrent): bool|null $comparator
      */
     public function __construct(
         private readonly PatchValue $patch,
@@ -45,8 +61,12 @@ final class Field implements Behavior
         Comparator|Closure|null     $comparator = null,
     )
     {
+        $this->comparator  = $comparator;
+        $this->transformer = static fn(mixed $value): mixed => $value;
+
         $this->current = new LazyValue($this->resolveCurrent($current));
-        $this->matches = new LazyValue($this->resolve($comparator));
+        $this->value   = new LazyValue($this->resolveValue());
+        $this->matches = new LazyValue($this->resolve($this->comparator));
     }
 
     /**
@@ -57,7 +77,7 @@ final class Field implements Behavior
      * @param TFromCurrent|Closure(): TFromCurrent $current
      * @param Comparator|Closure(TFromValue, TFromCurrent): bool|null $comparator
      *
-     * @return Field<TFromValue, TFromCurrent>
+     * @return Field<TFromValue, TFromValue, TFromCurrent>
      */
     public static function from(
         PatchValue              $patch,
@@ -73,11 +93,11 @@ final class Field implements Behavior
     }
 
     /**
-     * @return TValue
+     * @return TResolved
      */
     public function value(): mixed
     {
-        return $this->patch()->value();
+        return $this->value->get();
     }
 
     /**
@@ -104,7 +124,7 @@ final class Field implements Behavior
     }
 
     /**
-     * @return Delta<TCurrent, TValue>|null
+     * @return Delta<TCurrent, TResolved>|null
      */
     public function delta(): ?Delta
     {
@@ -119,7 +139,7 @@ final class Field implements Behavior
     }
 
     /**
-     * @return Field<TValue, TCurrent>
+     * @return Field<TValue, TResolved, TCurrent>
      */
     public function field(): Field
     {
@@ -127,7 +147,7 @@ final class Field implements Behavior
     }
 
     /**
-     * @return Required<TValue, TCurrent>
+     * @return Required<TValue, TResolved, TCurrent>
      */
     public function required(): Required
     {
@@ -135,7 +155,7 @@ final class Field implements Behavior
     }
 
     /**
-     * @return Optional<TValue, TCurrent>
+     * @return Optional<TValue, TResolved, TCurrent>
      */
     public function optional(): Optional
     {
@@ -148,11 +168,26 @@ final class Field implements Behavior
     }
 
     /**
-     * @param Comparator|Closure(TValue, TCurrent): bool $comparator
+     * @param Comparator|Closure(TResolved, TCurrent): bool $comparator
      */
     public function comparator(Comparator|Closure $comparator): self
     {
-        $this->matches = new LazyValue($this->resolve($comparator));
+        $this->comparator = $comparator;
+        $this->matches    = new LazyValue($this->resolve($this->comparator));
+
+        return $this;
+    }
+
+    /**
+     * @template TNextResolved
+     * @param Closure(TValue): TNextResolved $transformer
+     * @return Field<TValue, TNextResolved, TCurrent>
+     */
+    public function transform(Closure $transformer): self
+    {
+        $this->transformer = $transformer;
+        $this->value       = new LazyValue($this->resolveValue());
+        $this->matches     = new LazyValue($this->resolve($this->comparator));
 
         return $this;
     }
@@ -181,6 +216,22 @@ final class Field implements Behavior
             }
 
             return $comparator->equals($value, $current);
+        };
+    }
+
+    /**
+     * @return Closure(): TResolved
+     */
+    private function resolveValue(): Closure
+    {
+        return function () {
+            $value = $this->patch()->value();
+
+            if (!$this->isPresent()) {
+                return $value;
+            }
+
+            return ($this->transformer)($value);
         };
     }
 
