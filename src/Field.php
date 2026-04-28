@@ -25,29 +25,6 @@ use Vaened\DeltaOrchestrator\Patch\PatchValue;
 final class Field implements Behavior
 {
     /**
-     * @template TFromValue
-     * @template TFromCurrent
-     *
-     * @param PatchValue<TFromValue> $patch
-     * @param TFromCurrent|Closure(): TFromCurrent $current
-     * @param Comparator|Closure(TFromValue, TFromCurrent): bool|null $comparator
-     *
-     * @return Field<TFromValue, TFromCurrent>
-     */
-    public static function from(
-        PatchValue              $patch,
-        mixed                   $current,
-        Comparator|Closure|null $comparator = null,
-    ): self
-    {
-        return new self(
-            patch     : $patch,
-            current   : $current,
-            comparator: $comparator,
-        );
-    }
-
-    /**
      * @var LazyValue<TCurrent>
      */
     private LazyValue $current;
@@ -70,6 +47,29 @@ final class Field implements Behavior
     {
         $this->current = new LazyValue($this->resolveCurrent($current));
         $this->matches = new LazyValue($this->resolve($comparator));
+    }
+
+    /**
+     * @template TFromValue
+     * @template TFromCurrent
+     *
+     * @param PatchValue<TFromValue> $patch
+     * @param TFromCurrent|Closure(): TFromCurrent $current
+     * @param Comparator|Closure(TFromValue, TFromCurrent): bool|null $comparator
+     *
+     * @return Field<TFromValue, TFromCurrent>
+     */
+    public static function from(
+        PatchValue              $patch,
+        mixed                   $current,
+        Comparator|Closure|null $comparator = null,
+    ): self
+    {
+        return new self(
+            patch     : $patch,
+            current   : $current,
+            comparator: $comparator,
+        );
     }
 
     /**
