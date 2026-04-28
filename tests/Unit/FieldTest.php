@@ -93,6 +93,20 @@ final class FieldTest extends TestCase
         self::assertNull($field->delta());
     }
 
+    public function test_it_uses_compare_fluent_method(): void
+    {
+        $field = $this->field(value: 'PEDRO', current: 'pedro')
+            ->compare(new class implements Comparator {
+                public function equals(mixed $value, mixed $current): bool
+                {
+                    return strtolower((string)$value) === strtolower((string)$current);
+                }
+            });
+
+        self::assertTrue($field->matches());
+        self::assertFalse($field->changed());
+    }
+
     public function test_it_transforms_value_before_comparison_and_delta(): void
     {
         $field = $this->field(value: '  PEDRO  ', current: 'pedro')
@@ -102,5 +116,21 @@ final class FieldTest extends TestCase
         self::assertTrue($field->matches());
         self::assertFalse($field->changed());
         self::assertNull($field->delta());
+    }
+
+    public function test_it_recomputes_matches_when_compare_is_set_after_transform(): void
+    {
+        $field = $this->field(value: '  PEDRO  ', current: 'pedro')
+            ->transform(static fn(string $value): string => trim($value))
+            ->compare(new class implements Comparator {
+                public function equals(mixed $value, mixed $current): bool
+                {
+                    return strtolower((string)$value) === strtolower((string)$current);
+                }
+            });
+
+        self::assertTrue($field->matches());
+        self::assertFalse($field->changed());
+        self::assertSame('PEDRO', $field->value());
     }
 }
