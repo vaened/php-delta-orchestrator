@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace Vaened\DeltaOrchestrator\Comparison;
 
+use Vaened\DeltaOrchestrator\Exceptions\ComparisonTypeMismatch;
+
 use function array_key_exists;
 use function count;
 use function is_array;
@@ -29,7 +31,7 @@ final readonly class ArrayComparator implements Comparator
     public function equals(mixed $value, mixed $current): bool
     {
         if (!$this->bothAreArrays($value, $current)) {
-            return false;
+            throw ComparisonTypeMismatch::forArray($value, $current);
         }
 
         return $this->equalsArray($value, $current);

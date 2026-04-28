@@ -136,4 +136,13 @@ final class ComparatorsTest extends TestCase
             ['meta' => ['age' => 20, 'active' => true]],
         ));
     }
+
+    public function test_array_comparator_throws_when_values_are_not_arrays(): void
+    {
+        $comparator = ArrayComparator::create();
+
+        $this->expectException(ComparisonTypeMismatch::class);
+
+        $comparator->equals(['a' => 1], 'not-array');
+    }
 }

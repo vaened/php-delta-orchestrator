@@ -38,4 +38,13 @@ final class ComparisonTypeMismatch extends DeltaOrchestratorException
             get_debug_type($current),
         ));
     }
+
+    public static function forArray(mixed $value, mixed $current): self
+    {
+        return new self(sprintf(
+            'Array comparison requires array values on both sides. Got <%s> and <%s>.',
+            get_debug_type($value),
+            get_debug_type($current),
+        ));
+    }
 }
