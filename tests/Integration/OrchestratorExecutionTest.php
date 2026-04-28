@@ -25,7 +25,7 @@ final class OrchestratorExecutionTest extends TestCase
 {
     use CreatesIntegrationScenarios;
 
-    public function test_it_executes_a_real_action_with_schema_and_patch_values(): void
+    public function test_it_executes_a_real_action_with_fields_and_patch_values(): void
     {
         ['name' => $name, 'age' => $age, 'birthday' => $birthday] = $this->profileFields(
             ageComparator: NumericComparator::create(),

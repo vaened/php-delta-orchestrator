@@ -8,17 +8,15 @@
 
 ```php
 // Patch + current state
-$schema = new Schema($payload, $availability);
-
-$startDate = $schema->define(
+$startDate = Field::from(
     // incoming patch vs current value
-    patch  : fn(UpdateAvailabilityCommand $payload) => $payload->startDate,
-    current: fn(Availability $current) => $current->startDate,
+    patch  : $payload->startDate,
+    current: $availability->startDate,
 );
 
-$endDate = $schema->define(
-    patch  : fn(UpdateAvailabilityCommand $payload) => $payload->endDate,
-    current: fn(Availability $current) => $current->endDate,
+$endDate = Field::from(
+    patch  : $payload->endDate,
+    current: $availability->endDate,
 );
 
 $orchestrator = new Orchestrator();
@@ -76,15 +74,14 @@ The library organizes the flow of a partial update into explicit steps:
 
 ```mermaid
 flowchart LR
-    A["Patch + current state"] --> B["Schema<br/>(define Field)"]
-    B --> C["Field<br/>(presence + comparison)"]
-    C --> D{"Does the action apply?<br/>(when)"}
-    D -- "No" --> X["Skip"]
-    D -- "Yes" --> E{"Is contract satisfied?<br/>(behaviors)"}
-    E -- "No" --> Z["Throw exception"]
-    E -- "Yes" --> F{"Is there an effective delta?"}
-    F -- "No" --> X
-    F -- "Yes" --> G["apply()"]
+    A["Patch + current state"] --> B["Field<br/>(presence + comparison)"]
+    B --> C{"Does the action apply?<br/>(when)"}
+    C -- "No" --> X["Skip"]
+    C -- "Yes" --> D{"Is contract satisfied?<br/>(behaviors)"}
+    D -- "No" --> Z["Throw exception"]
+    D -- "Yes" --> E{"Is there an effective delta?"}
+    E -- "No" --> X
+    E -- "Yes" --> G["apply()"]
 ```
 
 ## Usage
@@ -126,25 +123,23 @@ $endDate   = $input->dateTimeImmutable('end_date');
 
 ### 2) Define fields
 
-You connect the patch with the current state using [`Schema`](src/Schema.php). Each `patch` represents a `PatchValue`, not the final value,
-so the incoming value may differ in type from the current state.
+You connect the patch with the current state using [`Field::from()`](src/Field.php). Each `patch` represents a `PatchValue`, not the final
+value, so the incoming value may differ in type from the current state.
 
 ```php
-$schema = new Schema($payload, $availability);
-
-$startDate = $schema->define(
-    patch  : fn(UpdateAvailabilityCommand $payload) => $payload->startDate,
-    current: fn(Availability $current) => $current->startDate,
+$startDate = Field::from(
+    patch  : $payload->startDate,
+    current: $availability->startDate,
 );
 ```
 
 You can optionally define a comparator:
 
 ```php
-$endDate = $schema->define(
-    patch  : fn($command) => $command->endDate,
-    current: fn($availability) => $availability->endDate,
-    compare: DateTimeComparator::create(),
+$endDate = Field::from(
+    patch     : $payload->endDate,
+    current   : $availability->endDate,
+    comparator: DateTimeComparator::create(),
 );
 ```
 
@@ -290,10 +285,10 @@ If none is defined, `StrictComparator` is used.
 For numeric values and numeric strings.
 
 ```php
-$quantity = $schema->define(
-    patch  : fn($payload) => $payload->quantity,
-    current: fn($current) => $current->quantity,
-    compare: NumericComparator::create(),
+$quantity = Field::from(
+    patch     : $payload->quantity,
+    current   : $current->quantity,
+    comparator: NumericComparator::create(),
 );
 ```
 
@@ -302,10 +297,10 @@ $quantity = $schema->define(
 For date comparisons with explicit semantics.
 
 ```php
-$startDate = $schema->define(
-    patch  : fn($payload) => $payload->startDate,
-    current: fn($current) => $current->startDate,
-    compare: DateTimeComparator::create(),
+$startDate = Field::from(
+    patch     : $payload->startDate,
+    current   : $current->startDate,
+    comparator: DateTimeComparator::create(),
 );
 ```
 
@@ -314,10 +309,10 @@ $startDate = $schema->define(
 For cases where intentional loose comparison (`==`) is desired.
 
 ```php
-$value = $schema->define(
-    patch  : fn($payload) => $payload->value,
-    current: fn($current) => $current->value,
-    compare: LooseComparator::create(),
+$value = Field::from(
+    patch     : $payload->value,
+    current   : $current->value,
+    comparator: LooseComparator::create(),
 );
 ```
 

@@ -7,7 +7,6 @@ use Vaened\DeltaOrchestrator\Comparison\DateTimeComparator;
 use Vaened\DeltaOrchestrator\Field;
 use Vaened\DeltaOrchestrator\Orchestrator;
 use Vaened\DeltaOrchestrator\Patch\PatchInput;
-use Vaened\DeltaOrchestrator\Schema;
 
 use function Vaened\DeltaOrchestrator\Rules\all;
 use function Vaened\DeltaOrchestrator\Rules\any;
@@ -49,35 +48,30 @@ $payload = new PatchInput(
     ],
 );
 
-$schema = new Schema(
-    payload: $payload,
-    current: $currentUser,
+$displayName = Field::from(
+    patch  : $payload->string('displayName'),
+    current: $currentUser->displayName,
 );
 
-$displayName = $schema->define(
-    patch  : fn(PatchInput $payload) => $payload->string('displayName'),
-    current: fn(UserProfile $current) => $current->displayName,
+$email = Field::from(
+    patch  : $payload->string('email'),
+    current: $currentUser->email,
 );
 
-$email = $schema->define(
-    patch  : fn(PatchInput $payload) => $payload->string('email'),
-    current: fn(UserProfile $current) => $current->email,
+$birthDate = Field::from(
+    patch  : $payload->dateTimeImmutable('birthDate'),
+    current: $currentUser->birthDate,
+    comparator: DateTimeComparator::create(),
 );
 
-$birthDate = $schema->define(
-    patch  : fn(PatchInput $payload) => $payload->dateTimeImmutable('birthDate'),
-    current: fn(UserProfile $current) => $current->birthDate,
-    compare: DateTimeComparator::create(),
+$marketingConsent = Field::from(
+    patch  : $payload->bool('marketingConsent'),
+    current: $currentUser->marketingConsent,
 );
 
-$marketingConsent = $schema->define(
-    patch  : fn(PatchInput $payload) => $payload->bool('marketingConsent'),
-    current: fn(UserProfile $current) => $current->marketingConsent,
-);
-
-$timezone = $schema->define(
-    patch  : fn(PatchInput $payload) => $payload->string('timezone'),
-    current: fn(UserProfile $current) => $current->timezone,
+$timezone = Field::from(
+    patch  : $payload->string('timezone'),
+    current: $currentUser->timezone,
 );
 
 $reporter     = new ScenarioReporter();

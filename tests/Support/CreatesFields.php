@@ -21,7 +21,7 @@ trait CreatesFields
         Comparator|Closure|null $comparator = null,
     ): Field
     {
-        return new Field(
+        return Field::from(
             patch     : new FakePatchValue($present, $value),
             current   : fn(): mixed => $current,
             comparator: $comparator,

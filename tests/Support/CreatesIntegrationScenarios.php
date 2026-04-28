@@ -17,7 +17,6 @@ use Vaened\DeltaOrchestrator\Patch\DateTimeImmutablePatchValue;
 use Vaened\DeltaOrchestrator\Patch\IntPatchValue;
 use Vaened\DeltaOrchestrator\Patch\PatchValue;
 use Vaened\DeltaOrchestrator\Patch\StringPatchValue;
-use Vaened\DeltaOrchestrator\Schema;
 use Vaened\DeltaOrchestrator\Tests\Support\Fixtures\ProfileState;
 use Vaened\DeltaOrchestrator\Tests\Support\Fixtures\UpdateProfileCommand;
 
@@ -62,25 +61,23 @@ trait CreatesIntegrationScenarios
         Comparator|Closure|null $birthdayComparator = null,
     ): array
     {
-        $schema = new Schema(
-            payload: $payload ?? $this->updateProfileCommand(),
-            current: $current ?? $this->profileState(),
-        );
+        $payload ??= $this->updateProfileCommand();
+        $current ??= $this->profileState();
 
         return [
-            'name'     => $schema->define(
-                patch  : fn(UpdateProfileCommand $payload) => $payload->name,
-                current: fn(ProfileState $current) => $current->name,
+            'name'     => Field::from(
+                patch  : $payload->name,
+                current: $current->name,
             ),
-            'age'      => $schema->define(
-                patch  : fn(UpdateProfileCommand $payload) => $payload->age,
-                current: fn(ProfileState $current) => $current->age,
-                compare: $ageComparator,
+            'age'      => Field::from(
+                patch     : $payload->age,
+                current   : $current->age,
+                comparator: $ageComparator,
             ),
-            'birthday' => $schema->define(
-                patch  : fn(UpdateProfileCommand $payload) => $payload->birthday,
-                current: fn(ProfileState $current) => $current->birthday,
-                compare: $birthdayComparator,
+            'birthday' => Field::from(
+                patch     : $payload->birthday,
+                current   : $current->birthday,
+                comparator: $birthdayComparator,
             ),
         ];
     }
@@ -91,24 +88,10 @@ trait CreatesIntegrationScenarios
         Comparator|Closure|null $compare = null,
     ): Field
     {
-        $payload = new class($value) {
-            public function __construct(public PatchValue $value)
-            {
-            }
-        };
-
-        $state = new class($current) {
-            public function __construct(public mixed $value)
-            {
-            }
-        };
-
-        $schema = new Schema(payload: $payload, current: $state);
-
-        return $schema->define(
-            patch  : fn(object $payload) => $payload->value,
-            current: fn(object $current) => $current->value,
-            compare: $compare,
+        return Field::from(
+            patch     : $value,
+            current   : $current,
+            comparator: $compare,
         );
     }
 }
