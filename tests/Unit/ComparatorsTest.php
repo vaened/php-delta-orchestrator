@@ -55,7 +55,15 @@ final class ComparatorsTest extends TestCase
         self::assertTrue($comparator->equals('10', 10));
         self::assertTrue($comparator->equals(10, '10'));
         self::assertTrue($comparator->equals('10.5', 10.5));
-        self::assertFalse($comparator->equals('hola', 10));
+    }
+
+    public function test_numeric_comparator_throws_when_values_are_not_numeric(): void
+    {
+        $comparator = NumericComparator::create();
+
+        $this->expectException(ComparisonTypeMismatch::class);
+
+        $comparator->equals('hola', 10);
     }
 
     public function test_loose_comparator_uses_loose_equality(): void

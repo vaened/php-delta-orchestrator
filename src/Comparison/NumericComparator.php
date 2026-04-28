@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace Vaened\DeltaOrchestrator\Comparison;
 
+use Vaened\DeltaOrchestrator\Exceptions\ComparisonTypeMismatch;
+
 final readonly class NumericComparator implements Comparator
 {
     public static function create(): self
@@ -17,11 +19,13 @@ final readonly class NumericComparator implements Comparator
 
     public function equals(mixed $value, mixed $current): bool
     {
+        $rawValue = $value;
+        $rawCurrent = $current;
         $value = $this->normalize($value);
         $current = $this->normalize($current);
 
         if ($value === null || $current === null) {
-            return false;
+            throw ComparisonTypeMismatch::forNumeric($rawValue, $rawCurrent);
         }
 
         return $value === $current;

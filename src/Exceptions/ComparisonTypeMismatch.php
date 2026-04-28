@@ -29,4 +29,13 @@ final class ComparisonTypeMismatch extends DeltaOrchestratorException
             get_debug_type($current),
         ));
     }
+
+    public static function forNumeric(mixed $value, mixed $current): self
+    {
+        return new self(sprintf(
+            'Numeric comparison requires int, float, or numeric string values. Got <%s> and <%s>.',
+            get_debug_type($value),
+            get_debug_type($current),
+        ));
+    }
 }
