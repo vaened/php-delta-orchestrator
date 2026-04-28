@@ -137,6 +137,18 @@ final class ComparatorsTest extends TestCase
         ));
     }
 
+    public function test_array_comparator_accepts_custom_item_closure(): void
+    {
+        $comparator = ArrayComparator::create(
+            static fn(mixed $value, mixed $current): bool => strtolower((string)$value) === strtolower((string)$current),
+        );
+
+        self::assertTrue($comparator->equals(
+            ['profile' => ['name' => 'JUAN']],
+            ['profile' => ['name' => 'juan']],
+        ));
+    }
+
     public function test_array_comparator_throws_when_values_are_not_arrays(): void
     {
         $comparator = ArrayComparator::create();

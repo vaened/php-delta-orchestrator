@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Vaened\DeltaOrchestrator\Comparison;
 
+use Closure;
 use Vaened\DeltaOrchestrator\Exceptions\ComparisonTypeMismatch;
 
 use function array_key_exists;
@@ -18,12 +19,16 @@ final readonly class ArrayComparator implements Comparator
 {
     private Comparator $itemComparator;
 
-    public function __construct(?Comparator $itemComparator = null)
+    public function __construct(Comparator|Closure|null $itemComparator = null)
     {
-        $this->itemComparator = $itemComparator ?? StrictComparator::create();
+        $this->itemComparator = match (true) {
+            $itemComparator instanceof Comparator => $itemComparator,
+            $itemComparator instanceof Closure    => self::toComparator($itemComparator),
+            default                               => StrictComparator::create(),
+        };
     }
 
-    public static function create(?Comparator $itemComparator = null): self
+    public static function create(Comparator|Closure|null $itemComparator = null): self
     {
         return new self($itemComparator);
     }
@@ -68,5 +73,19 @@ final readonly class ArrayComparator implements Comparator
     private function bothAreArrays(mixed $left, mixed $right): bool
     {
         return is_array($left) && is_array($right);
+    }
+
+    private static function toComparator(Closure $itemComparator): Comparator
+    {
+        return new class($itemComparator) implements Comparator {
+            public function __construct(private readonly Closure $comparator)
+            {
+            }
+
+            public function equals(mixed $value, mixed $current): bool
+            {
+                return ($this->comparator)($value, $current);
+            }
+        };
     }
 }
