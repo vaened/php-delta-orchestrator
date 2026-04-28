@@ -316,6 +316,28 @@ $value = Field::from(
 );
 ```
 
+#### ArrayComparator
+
+For recursive array comparisons, with support for injecting an item comparator.
+
+```php
+$settings = Field::from(
+    patch     : $payload->settings,
+    current   : $current->settings,
+    comparator: ArrayComparator::create(),
+);
+```
+
+You can also provide a custom comparator for leaf values:
+
+```php
+$settings = Field::from(
+    patch     : $payload->settings,
+    current   : $current->settings,
+    comparator: ArrayComparator::create(LooseComparator::create()),
+);
+```
+
 ## Patch (input)
 
 ### PatchValue and normalization
