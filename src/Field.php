@@ -36,16 +36,16 @@ final class Field implements Behavior
 
     /**
      * @param PatchValue<TValue> $patch
-     * @param Closure(): TCurrent $current
+     * @param TCurrent|Closure(): TCurrent $current
      * @param Comparator|Closure(TValue, TCurrent): bool|null $comparator
      */
     public function __construct(
         private readonly PatchValue $patch,
-        Closure                     $current,
+        mixed                       $current,
         Comparator|Closure|null     $comparator = null,
     )
     {
-        $this->current = new LazyValue($current);
+        $this->current = new LazyValue($this->resolveCurrent($current));
         $this->matches = new LazyValue($this->resolve($comparator));
     }
 
@@ -149,5 +149,18 @@ final class Field implements Behavior
 
             return $comparator->equals($value, $current);
         };
+    }
+
+    /**
+     * @param TCurrent|Closure(): TCurrent $current
+     * @return Closure(): TCurrent
+     */
+    private function resolveCurrent(mixed $current): Closure
+    {
+        if ($current instanceof Closure) {
+            return $current;
+        }
+
+        return static fn() => $current;
     }
 }
