@@ -93,6 +93,23 @@ final class Field implements Behavior
     }
 
     /**
+     * @template TIn
+     * @template TOut
+     * @param Closure(TIn): TOut $transformer
+     * @return Closure(TIn|null): (TOut|null)
+     */
+    public static function notNullable(Closure $transformer): Closure
+    {
+        return static function (mixed $value) use ($transformer): mixed {
+            if ($value === null) {
+                return null;
+            }
+
+            return $transformer($value);
+        };
+    }
+
+    /**
      * @return TResolved
      */
     public function value(): mixed

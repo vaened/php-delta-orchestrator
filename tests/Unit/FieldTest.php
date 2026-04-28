@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Vaened\DeltaOrchestrator\Tests\Unit;
 
 use DateTimeImmutable;
+use Vaened\DeltaOrchestrator\Field;
 use Vaened\DeltaOrchestrator\Exceptions\ComparisonTypeMismatch;
 use Vaened\DeltaOrchestrator\Comparison\Comparator;
 use Vaened\DeltaOrchestrator\Tests\TestCase;
@@ -132,5 +133,23 @@ final class FieldTest extends TestCase
         self::assertTrue($field->matches());
         self::assertFalse($field->changed());
         self::assertSame('PEDRO', $field->value());
+    }
+
+    public function test_not_nullable_transformer_keeps_null_and_transforms_non_null(): void
+    {
+        $nullField = $this->field(value: null, current: null)
+            ->transform(Field::notNullable(
+                static fn(string $value): string => strtolower($value),
+            ));
+
+        self::assertNull($nullField->value());
+
+        $valueField = $this->field(value: 'PEDRO', current: 'pedro')
+            ->transform(Field::notNullable(
+                static fn(string $value): string => strtolower($value),
+            ));
+
+        self::assertSame('pedro', $valueField->value());
+        self::assertTrue($valueField->matches());
     }
 }
