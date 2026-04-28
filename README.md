@@ -139,7 +139,7 @@ You can optionally define a comparator:
 $endDate = Field::from(
     patch  : $payload->endDate,
     current: $availability->endDate,
-)->compare(DateTimeComparator::create());
+)->using(comparator: DateTimeComparator::create());
 ```
 
 You can also transform the incoming patch value before comparison and action execution:
@@ -150,7 +150,7 @@ $name = Field::from(
     current: $current->name,
 )
     ->transform(static fn(string $value): string => strtolower(trim($value)))
-    ->compare(StrictComparator::create());
+    ->using(comparator: StrictComparator::create());
 ```
 
 Each [`Field`](src/Field.php) exposes:
@@ -298,7 +298,7 @@ For numeric values and numeric strings.
 $quantity = Field::from(
     patch  : $payload->quantity,
     current: $current->quantity,
-)->compare(NumericComparator::create());
+)->using(comparator: NumericComparator::create());
 ```
 
 #### DateTimeComparator
@@ -309,7 +309,7 @@ For date comparisons with explicit semantics.
 $startDate = Field::from(
     patch  : $payload->startDate,
     current: $current->startDate,
-)->compare(DateTimeComparator::create());
+)->using(comparator: DateTimeComparator::create());
 ```
 
 #### LooseComparator
@@ -320,7 +320,7 @@ For cases where intentional loose comparison (`==`) is desired.
 $value = Field::from(
     patch  : $payload->value,
     current: $current->value,
-)->compare(LooseComparator::create());
+)->using(comparator: LooseComparator::create());
 ```
 
 #### ArrayComparator
@@ -331,7 +331,7 @@ For recursive array comparisons, with support for injecting an item comparator.
 $settings = Field::from(
     patch  : $payload->settings,
     current: $current->settings,
-)->compare(ArrayComparator::create());
+)->using(comparator: ArrayComparator::create());
 ```
 
 You can also provide a custom comparator for leaf values:
@@ -340,7 +340,7 @@ You can also provide a custom comparator for leaf values:
 $settings = Field::from(
     patch  : $payload->settings,
     current: $current->settings,
-)->compare(ArrayComparator::create(LooseComparator::create()));
+)->using(comparator: ArrayComparator::create(LooseComparator::create()));
 ```
 
 ## Patch (input)
