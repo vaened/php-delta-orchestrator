@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Vaened\DeltaOrchestrator\Tests\Unit;
 
 use DateTimeImmutable;
+use Vaened\DeltaOrchestrator\Comparison\ArrayComparator;
 use Vaened\DeltaOrchestrator\Exceptions\ComparisonTypeMismatch;
 use Vaened\DeltaOrchestrator\Comparison\DateTimeComparator;
 use Vaened\DeltaOrchestrator\Comparison\LooseComparator;
@@ -102,5 +103,37 @@ final class ComparatorsTest extends TestCase
         $this->expectException(ComparisonTypeMismatch::class);
 
         $comparator->equals('not-a-date', 10);
+    }
+
+    public function test_array_comparator_compares_nested_arrays_with_strict_items(): void
+    {
+        $comparator = ArrayComparator::create();
+
+        self::assertTrue($comparator->equals(
+            ['name' => 'Juan', 'meta' => ['age' => 20]],
+            ['name' => 'Juan', 'meta' => ['age' => 20]],
+        ));
+    }
+
+    public function test_array_comparator_with_strict_items_throws_on_incompatible_types(): void
+    {
+        $comparator = ArrayComparator::create();
+
+        $this->expectException(ComparisonTypeMismatch::class);
+
+        $comparator->equals(
+            ['name' => 'Juan', 'meta' => ['age' => 20]],
+            ['name' => 'Juan', 'meta' => ['age' => '20']],
+        );
+    }
+
+    public function test_array_comparator_accepts_custom_item_comparator(): void
+    {
+        $comparator = ArrayComparator::create(LooseComparator::create());
+
+        self::assertTrue($comparator->equals(
+            ['meta' => ['age' => '20', 'active' => 1]],
+            ['meta' => ['age' => 20, 'active' => true]],
+        ));
     }
 }
