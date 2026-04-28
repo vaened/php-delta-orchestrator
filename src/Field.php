@@ -170,7 +170,7 @@ final class Field implements Behavior
     /**
      * @param Comparator|Closure(TResolved, TCurrent): bool $comparator
      */
-    public function comparator(Comparator|Closure $comparator): self
+    public function compare(Comparator|Closure $comparator): self
     {
         $this->comparator = $comparator;
         $this->matches    = new LazyValue($this->resolve($this->comparator));
