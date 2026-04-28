@@ -148,6 +148,16 @@ final class Field implements Behavior
     }
 
     /**
+     * @param Comparator|Closure(TValue, TCurrent): bool $comparator
+     */
+    public function comparator(Comparator|Closure $comparator): self
+    {
+        $this->matches = new LazyValue($this->resolve($comparator));
+
+        return $this;
+    }
+
+    /**
      * @return PatchValue<TValue>
      */
     private function patch(): PatchValue
