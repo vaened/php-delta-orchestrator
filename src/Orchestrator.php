@@ -13,6 +13,7 @@ use Vaened\DeltaOrchestrator\Exceptions\ActionBehaviorNotSatisfied;
 
 use function array_map;
 use function call_user_func;
+use function count;
 use function Vaened\DeltaOrchestrator\Rules\any;
 
 final class Orchestrator
@@ -29,12 +30,16 @@ final class Orchestrator
         return $this;
     }
 
-    public function execute(): void
+    public function execute(): ExecutionResult
     {
+        $executed = [];
+        $skipped  = [];
+
         foreach ($this->actions as $action) {
             $fields = $this->unwrap($action);
 
             if (!$this->passesWhen($action, $fields)) {
+                $skipped[] = $action->description() ?? 'Unknown';
                 continue;
             }
 
@@ -49,11 +54,19 @@ final class Orchestrator
             }
 
             if (!$this->passesChanges($fields)) {
+                $skipped[] = $action->description() ?? 'Unknown';
                 continue;
             }
 
             call_user_func($action->apply(), ...$fields);
+            $executed[] = $action->description() ?? 'Unknown';
         }
+
+        return new ExecutionResult(
+            total   : count($this->actions),
+            executed: $executed,
+            skipped : $skipped,
+        );
     }
 
     private function passesWhen(Action $action, array $fields): bool

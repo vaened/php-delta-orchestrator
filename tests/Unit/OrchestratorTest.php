@@ -34,9 +34,12 @@ final class OrchestratorTest extends TestCase
             },
         );
 
-        (new Orchestrator())->register($action)->execute();
+        $result = (new Orchestrator())->register($action)->execute();
 
         self::assertFalse($executed);
+        self::assertSame(1, $result->total());
+        self::assertSame(0, $result->executed());
+        self::assertSame(1, $result->skipped());
     }
 
     public function test_it_executes_when_any_field_is_present_and_changed_by_default(): void
@@ -53,9 +56,11 @@ final class OrchestratorTest extends TestCase
             },
         );
 
-        (new Orchestrator())->register($action)->execute();
+        $result = (new Orchestrator())->register($action)->execute();
 
         self::assertTrue($executed);
+        self::assertSame(1, $result->executed());
+        self::assertTrue($result->hasExecutedAny());
     }
 
     public function test_it_skips_action_when_fields_are_present_but_no_real_delta_exists(): void
@@ -69,9 +74,43 @@ final class OrchestratorTest extends TestCase
             },
         );
 
-        (new Orchestrator())->register($action)->execute();
+        $result = (new Orchestrator())->register($action)->execute();
 
         self::assertFalse($executed);
+        self::assertSame(1, $result->skipped());
+        self::assertTrue($result->hasSkippedAny());
+    }
+
+    public function test_it_tracks_executed_and_skipped_descriptions(): void
+    {
+        $executed = [];
+
+        $run = new Action(
+            fields      : [$this->field(value: 'Juan', current: 'Pedro', present: true)],
+            apply       : static function (Field ...$fields) use (&$executed): void {
+                $executed[] = 'run';
+            },
+            description : 'Run action',
+        );
+
+        $skip = new Action(
+            fields      : [$this->field(value: 'Pedro', current: 'Pedro', present: true)],
+            apply       : static function (Field ...$fields) use (&$executed): void {
+                $executed[] = 'skip';
+            },
+            description : 'Skip action',
+        );
+
+        $result = (new Orchestrator())
+            ->register($run)
+            ->register($skip)
+            ->execute();
+
+        self::assertSame(['run'], $executed);
+        self::assertTrue($result->wasExecuted('Run action'));
+        self::assertFalse($result->wasExecuted('Skip action'));
+        self::assertTrue($result->wasSkipped('Skip action'));
+        self::assertFalse($result->wasSkipped('Run action'));
     }
 
     public function test_it_throws_action_behavior_not_satisfied_with_context(): void
