@@ -185,6 +185,14 @@ final class Field implements Behavior
     }
 
     /**
+     * @return TResolved|TCurrent
+     */
+    public function effective(): mixed
+    {
+        return $this->isPresent() ? $this->value() : $this->current();
+    }
+
+    /**
      * @param Comparator|Closure(TResolved, TCurrent): bool $comparator
      */
     public function using(Comparator|Closure $comparator): self

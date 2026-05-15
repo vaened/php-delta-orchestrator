@@ -135,6 +135,20 @@ final class FieldTest extends TestCase
         self::assertSame('PEDRO', $field->value());
     }
 
+    public function test_it_returns_effective_patch_value_when_present(): void
+    {
+        $field = $this->field(value: 'Juan', current: 'Pedro', present: true);
+
+        self::assertSame('Juan', $field->effective());
+    }
+
+    public function test_it_returns_effective_current_value_when_absent(): void
+    {
+        $field = $this->field(value: 'Juan', current: 'Pedro', present: false);
+
+        self::assertSame('Pedro', $field->effective());
+    }
+
     public function test_not_nullable_transformer_keeps_null_and_transforms_non_null(): void
     {
         $nullField = $this->field(value: null, current: null)

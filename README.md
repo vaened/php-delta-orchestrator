@@ -218,13 +218,13 @@ The [`Orchestrator`](src/Orchestrator.php) performs:
 
 The library does not automatically build a projected state.
 
-If you need to combine patch values with the current state, you must do it explicitly:
+If you need the effective value for a field (patch value when present, otherwise current value), use `effective()`:
 
 ```php
-$start = $startDate->isPresent() ? $startDate->value() : $startDate->current();
+$start = $startDate->effective();
 ```
 
-This allows you to control type handling, normalization, and domain rules.
+This keeps action code cleaner while preserving explicit field-level behavior.
 
 ## Rules
 
