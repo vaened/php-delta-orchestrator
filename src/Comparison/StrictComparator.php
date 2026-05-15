@@ -29,7 +29,7 @@ final readonly class StrictComparator implements Comparator
         }
 
         if ($value instanceof DateTimeInterface && $current instanceof DateTimeInterface) {
-            return $value->format('Y-m-d H:i:s.uP') === $current->format('Y-m-d H:i:s.uP');
+            return $value->format('U.u') === $current->format('U.u');
         }
 
         if (get_debug_type($value) !== get_debug_type($current)) {

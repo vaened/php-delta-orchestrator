@@ -33,7 +33,7 @@ final readonly class DateTimeComparator implements Comparator
         $value   = $this->normalize($value, $current);
         $current = $this->normalize($current, $value);
 
-        return $value->format('Y-m-d H:i:s.uP') === $current->format('Y-m-d H:i:s.uP');
+        return $value->format('U.u') === $current->format('U.u');
     }
 
     private function normalize(mixed $value, mixed $other): DateTimeInterface

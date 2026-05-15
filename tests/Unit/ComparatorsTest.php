@@ -55,6 +55,16 @@ final class ComparatorsTest extends TestCase
         self::assertFalse($comparator->equals($sameA, $other));
     }
 
+    public function test_strict_comparator_treats_same_instant_with_different_timezones_as_equal(): void
+    {
+        $comparator = StrictComparator::create();
+
+        $lima = new DateTimeImmutable('2026-04-30 00:00:00-05:00');
+        $utc  = new DateTimeImmutable('2026-04-30 05:00:00+00:00');
+
+        self::assertTrue($comparator->equals($lima, $utc));
+    }
+
     public function test_numeric_comparator_compares_numeric_values_semantically(): void
     {
         $comparator = NumericComparator::create();
@@ -110,6 +120,16 @@ final class ComparatorsTest extends TestCase
         self::assertFalse($comparator->equals($value, $other));
         self::assertTrue($comparator->equals('2026-04-26 10:20:30', $current));
         self::assertTrue($comparator->equals('2026-04-26 10:20:30', '2026-04-26 10:20:30'));
+    }
+
+    public function test_datetime_comparator_treats_same_instant_with_different_timezones_as_equal(): void
+    {
+        $comparator = DateTimeComparator::create();
+
+        $lima = new DateTimeImmutable('2026-04-30 00:00:00-05:00');
+        $utc  = new DateTimeImmutable('2026-04-30 05:00:00+00:00');
+
+        self::assertTrue($comparator->equals($lima, $utc));
     }
 
     public function test_datetime_comparator_throws_when_values_are_not_comparable_as_dates(): void
