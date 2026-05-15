@@ -29,7 +29,7 @@ $orchestrator->register(new Action(
     },
 ));
 
-$orchestrator->execute();
+$result = $orchestrator->execute();
 ```
 
 ## Installation
@@ -155,8 +155,11 @@ $name = Field::from(
 Each [`Field`](src/Field.php) exposes:
 
 * `isPresent()` → whether the field was provided in the patch
+* `isChanged()` → whether the field has a real delta against the current value
 * `value()` → incoming value
 * `current()` → current value
+* `effective()` → incoming value when present, otherwise current value
+* `changed()` → incoming value when a real change exists, otherwise `null`
 * `delta()` → returns the transition (`previous → next`) if a change exists, or `null` otherwise
 
 ### 3) Declare actions
@@ -203,7 +206,7 @@ when: static fn(Field ...$fields) => all($fields)
 ### 4) Execute orchestrator
 
 ```php
-$orchestrator->execute();
+$result = $orchestrator->execute();
 ```
 
 The [`Orchestrator`](src/Orchestrator.php) performs:
@@ -212,6 +215,16 @@ The [`Orchestrator`](src/Orchestrator.php) performs:
 2. Validates the contract (`behaviors`)
 3. Checks for an effective delta
 4. Executes `apply()` if applicable
+
+`execute()` returns an [`ExecutionResult`](src/ExecutionResult.php), so you can react to the run outcome:
+
+It includes totals and execution state (`total`, `executed`, `skipped`) plus helper checks and description-based lookups.
+
+```php
+if ($result->hasEffects()) {
+    // persist / publish events
+}
+```
 
 ### Note on current vs patch values
 
