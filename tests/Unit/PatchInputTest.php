@@ -17,8 +17,7 @@ final class PatchInputTest extends TestCase
     public function test_it_creates_string_patch_values_from_array_input(): void
     {
         $input = new PatchInput(
-            input       : ['name' => 'Juan'],
-            expectedKeys: ['name'],
+            input: ['name' => 'Juan'],
         );
 
         $name = $input->string('name');
@@ -30,8 +29,7 @@ final class PatchInputTest extends TestCase
     public function test_it_marks_missing_keys_as_absent(): void
     {
         $input = new PatchInput(
-            input       : ['name' => 'Juan'],
-            expectedKeys: ['name'],
+            input: ['name' => 'Juan'],
         );
 
         $age = $input->int('age');
@@ -40,28 +38,27 @@ final class PatchInputTest extends TestCase
         self::assertNull($age->value());
     }
 
-    public function test_it_uses_expected_keys_to_detect_presence(): void
+    public function test_it_uses_input_keys_to_detect_presence(): void
     {
         $input = new PatchInput(
-            input       : ['name' => 'Juan', 'age' => 20],
-            expectedKeys: ['name'],
+            input: ['name' => 'Juan', 'age' => 20],
         );
 
         self::assertTrue($input->string('name')->isPresent());
-        self::assertFalse($input->int('age')->isPresent());
+        self::assertTrue($input->int('age')->isPresent());
+        self::assertFalse($input->int('missing')->isPresent());
     }
 
     public function test_it_creates_typed_patch_values(): void
     {
         $input = new PatchInput(
-            input       : [
+            input: [
                 'age'       => '20',
                 'score'     => '10.5',
                 'enabled'   => 'true',
                 'startDate' => '2026-04-27 10:20:30',
                 'roles'     => ['admin', 'editor'],
             ],
-            expectedKeys: ['age', 'score', 'enabled', 'startDate', 'roles'],
         );
 
         self::assertSame(20, $input->int('age')->value());

@@ -27,7 +27,7 @@ $currentUser = new UserProfile(
 );
 
 $payload = new PatchInput(
-    input       : [
+    input: [
         // Present but equal: activates presence-based actions, but produces no delta.
         'displayName'      => 'Pedro',
 
@@ -39,12 +39,6 @@ $payload = new PatchInput(
 
         // Present with null: useful to demonstrate a contract failure in a controlled action.
         'marketingConsent' => null,
-    ],
-    expectedKeys: [
-        'displayName',
-        'email',
-        'birthDate',
-        'marketingConsent',
     ],
 );
 

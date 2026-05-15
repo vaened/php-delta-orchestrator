@@ -108,8 +108,7 @@ final readonly class UpdateAvailabilityCommand
 
 ```php
 $input = new PatchInput(
-    input       : $request->all(),
-    expectedKeys: ['start_date', 'end_date'],
+    input: $request->all(),
 );
 
 $startDate = $input->dateTimeImmutable('start_date');

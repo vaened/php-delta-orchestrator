@@ -15,11 +15,9 @@ final readonly class PatchInput
 {
     /**
      * @param TInput $input
-     * @param list<string> $expectedKeys
      */
     public function __construct(
         private array $input,
-        private array $expectedKeys,
     )
     {
     }
@@ -104,7 +102,7 @@ final readonly class PatchInput
      */
     public function isPresent(string $key): bool
     {
-        return in_array($key, $this->expectedKeys, true);
+        return array_key_exists($key, $this->input);
     }
 
     /**
