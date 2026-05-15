@@ -15,6 +15,8 @@ use Vaened\DeltaOrchestrator\Exceptions\ComparisonTypeMismatch;
 
 final readonly class DateTimeComparator implements Comparator
 {
+    use HandlesNullComparison;
+
     public static function create(): self
     {
         return new self();
@@ -22,6 +24,12 @@ final readonly class DateTimeComparator implements Comparator
 
     public function equals(mixed $value, mixed $current): bool
     {
+        $equals = $this->compareNulls($value, $current);
+
+        if ($equals !== null) {
+            return $equals;
+        }
+
         $value   = $this->normalize($value, $current);
         $current = $this->normalize($current, $value);
 

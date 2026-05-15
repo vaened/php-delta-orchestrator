@@ -35,6 +35,14 @@ final class ComparatorsTest extends TestCase
         $comparator->equals('10', 10);
     }
 
+    public function test_strict_comparator_handles_nulls_without_exception(): void
+    {
+        $comparator = StrictComparator::create();
+
+        self::assertTrue($comparator->equals(null, null));
+        self::assertFalse($comparator->equals(null, '10'));
+    }
+
     public function test_strict_comparator_compares_datetimes_by_exact_temporal_value(): void
     {
         $comparator = StrictComparator::create();
@@ -65,6 +73,14 @@ final class ComparatorsTest extends TestCase
         $this->expectException(ComparisonTypeMismatch::class);
 
         $comparator->equals('hola', 10);
+    }
+
+    public function test_numeric_comparator_handles_nulls_without_exception(): void
+    {
+        $comparator = NumericComparator::create();
+
+        self::assertTrue($comparator->equals(null, null));
+        self::assertFalse($comparator->equals(null, 10));
     }
 
     public function test_loose_comparator_uses_loose_equality(): void
@@ -103,6 +119,14 @@ final class ComparatorsTest extends TestCase
         $this->expectException(ComparisonTypeMismatch::class);
 
         $comparator->equals('not-a-date', 10);
+    }
+
+    public function test_datetime_comparator_handles_nulls_without_exception(): void
+    {
+        $comparator = DateTimeComparator::create();
+
+        self::assertTrue($comparator->equals(null, null));
+        self::assertFalse($comparator->equals(null, '2026-04-26 10:20:30'));
     }
 
     public function test_array_comparator_compares_nested_arrays_with_strict_items(): void
@@ -156,5 +180,13 @@ final class ComparatorsTest extends TestCase
         $this->expectException(ComparisonTypeMismatch::class);
 
         $comparator->equals(['a' => 1], 'not-array');
+    }
+
+    public function test_array_comparator_handles_nulls_without_exception(): void
+    {
+        $comparator = ArrayComparator::create();
+
+        self::assertTrue($comparator->equals(null, null));
+        self::assertFalse($comparator->equals(null, ['a' => 1]));
     }
 }

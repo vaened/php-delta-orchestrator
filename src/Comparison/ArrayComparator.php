@@ -17,6 +17,8 @@ use function is_array;
 
 final readonly class ArrayComparator implements Comparator
 {
+    use HandlesNullComparison;
+
     private Comparator $itemComparator;
 
     public function __construct(Comparator|Closure|null $itemComparator = null)
@@ -35,6 +37,12 @@ final readonly class ArrayComparator implements Comparator
 
     public function equals(mixed $value, mixed $current): bool
     {
+        $equals = $this->compareNulls($value, $current);
+
+        if ($equals !== null) {
+            return $equals;
+        }
+
         if (!$this->bothAreArrays($value, $current)) {
             throw ComparisonTypeMismatch::forArray($value, $current);
         }

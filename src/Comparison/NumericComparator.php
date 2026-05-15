@@ -12,6 +12,8 @@ use Vaened\DeltaOrchestrator\Exceptions\ComparisonTypeMismatch;
 
 final readonly class NumericComparator implements Comparator
 {
+    use HandlesNullComparison;
+
     public static function create(): self
     {
         return new self();
@@ -19,10 +21,16 @@ final readonly class NumericComparator implements Comparator
 
     public function equals(mixed $value, mixed $current): bool
     {
-        $rawValue = $value;
+        $equals = $this->compareNulls($value, $current);
+
+        if ($equals !== null) {
+            return $equals;
+        }
+
+        $rawValue   = $value;
         $rawCurrent = $current;
-        $value = $this->normalize($value);
-        $current = $this->normalize($current);
+        $value      = $this->normalize($value);
+        $current    = $this->normalize($current);
 
         if ($value === null || $current === null) {
             throw ComparisonTypeMismatch::forNumeric($rawValue, $rawCurrent);
