@@ -18,11 +18,26 @@ use function strtolower;
 
 final class FieldTest extends TestCase
 {
-    public function test_it_resolves_presence_value_and_current(): void
+    public function test_it_reports_present_when_patch_value_is_present(): void
     {
         $field = $this->field(value: 'Juan', current: 'Pedro', present: true);
 
         self::assertTrue($field->isPresent());
+        self::assertFalse($field->isAbsent());
+    }
+
+    public function test_it_reports_absent_when_patch_value_is_absent(): void
+    {
+        $field = $this->field(value: 'Juan', current: 'Pedro', present: false);
+
+        self::assertFalse($field->isPresent());
+        self::assertTrue($field->isAbsent());
+    }
+
+    public function test_it_resolves_value_and_current(): void
+    {
+        $field = $this->field(value: 'Juan', current: 'Pedro', present: true);
+
         self::assertSame('Juan', $field->value());
         self::assertSame('Pedro', $field->current());
     }

@@ -184,6 +184,11 @@ final class Field implements Behavior
         return $this->patch()->isPresent();
     }
 
+    public function isAbsent(): bool
+    {
+        return !$this->isPresent();
+    }
+
     /**
      * @return TResolved|TCurrent
      */
