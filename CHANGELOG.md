@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-05-15
+
+### Added
+
+- Added `ExecutionResult` to represent orchestration outcomes (`total`, `executed`, `skipped`) and description-based helpers.
+- Added `ActionBehaviorNotSatisfied::progressUntilFailure()` to expose partial execution progress when a contract failure interrupts
+  execution.
+- Added `ArrayPatchValue` with recursive normalization support for nested `PatchValue` instances.
+- Added `PatchInput::array(...)` helper for array patch extraction.
+- Added `Field::changed()` helper to return the incoming value only when a real change exists, otherwise `null`.
+
+### Changed
+
+- `Orchestrator::execute()` now returns `ExecutionResult`.
+- `PatchInput` presence detection now relies on real input keys (`array_key_exists`) and no longer requires `expectedKeys`.
+- Playground reporting now supports executed/skipped/failure output using orchestration results and failure progress.
+
+### Tests
+
+- Added/updated coverage for:
+    - `ExecutionResult` usage through orchestrator tests
+    - `ActionBehaviorNotSatisfied` partial progress exposure
+    - `PatchInput` presence semantics based on actual input keys
+    - `ArrayPatchValue` and `PatchInput::array(...)`
+
 ## [0.4.0] - 2026-05-14
 
 ### Added
