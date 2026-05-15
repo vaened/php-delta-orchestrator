@@ -39,12 +39,12 @@ final readonly class ExecutionResult
         return count($this->skipped);
     }
 
-    public function hasExecutedAny(): bool
+    public function hasEffects(): bool
     {
         return $this->executed() > 0;
     }
 
-    public function hasSkippedAny(): bool
+    public function hasSkipped(): bool
     {
         return $this->skipped() > 0;
     }

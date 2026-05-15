@@ -60,7 +60,7 @@ final class OrchestratorTest extends TestCase
 
         self::assertTrue($executed);
         self::assertSame(1, $result->executed());
-        self::assertTrue($result->hasExecutedAny());
+        self::assertTrue($result->hasEffects());
     }
 
     public function test_it_skips_action_when_fields_are_present_but_no_real_delta_exists(): void
@@ -78,7 +78,7 @@ final class OrchestratorTest extends TestCase
 
         self::assertFalse($executed);
         self::assertSame(1, $result->skipped());
-        self::assertTrue($result->hasSkippedAny());
+        self::assertTrue($result->hasSkipped());
     }
 
     public function test_it_tracks_executed_and_skipped_descriptions(): void
