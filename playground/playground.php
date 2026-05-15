@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Vaened\DeltaOrchestrator\Action;
 use Vaened\DeltaOrchestrator\Comparison\DateTimeComparator;
+use Vaened\DeltaOrchestrator\Exceptions\ActionBehaviorNotSatisfied;
 use Vaened\DeltaOrchestrator\Field;
 use Vaened\DeltaOrchestrator\Orchestrator;
 use Vaened\DeltaOrchestrator\Patch\PatchInput;
@@ -53,8 +54,8 @@ $email = Field::from(
 );
 
 $birthDate = Field::from(
-    patch  : $payload->dateTimeImmutable('birthDate'),
-    current: $currentUser->birthDate,
+    patch     : $payload->dateTimeImmutable('birthDate'),
+    current   : $currentUser->birthDate,
     comparator: DateTimeComparator::create(),
 );
 
@@ -183,7 +184,21 @@ $orchestrator->register(new Action(
 ));
 
 try {
-    $orchestrator->execute();
+    $result = $orchestrator->execute();
+
+    foreach ($result->skippedDescriptions() as $description) {
+        $reporter->skipped($description);
+    }
+} catch (ActionBehaviorNotSatisfied $exception) {
+    $progress = $exception->progressUntilFailure();
+
+    if ($progress !== null) {
+        foreach ($progress->skippedDescriptions() as $description) {
+            $reporter->skipped($description);
+        }
+    }
+
+    $reporter->failure('ContractFailure: ' . $exception::class);
 } catch (Throwable $exception) {
     $reporter->failure('ContractFailure: ' . $exception::class);
 }
