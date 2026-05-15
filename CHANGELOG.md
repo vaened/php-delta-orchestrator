@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.2] - 2026-05-15
+
+### Fixed
+
+- Fixed datetime comparison in `StrictComparator` and `DateTimeComparator` to use absolute instant comparison (`U.u`) instead of local
+  formatted representation, so equivalent instants across different timezones are treated as equal.
+- Added unit tests covering timezone-equivalent datetime comparisons for both comparators.
+
 ## [0.5.1] - 2026-05-15
 
 ### Fixed
