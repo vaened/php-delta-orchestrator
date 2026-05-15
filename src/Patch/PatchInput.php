@@ -88,6 +88,20 @@ final readonly class PatchInput
      * @template TKey of key-of<TInput>
      * @param TKey $key
      */
+    public function array(string $key): ArrayPatchValue
+    {
+        $value = $this->value($key);
+
+        return new ArrayPatchValue(
+            present: $this->isPresent($key),
+            value  : is_array($value) ? $value : null,
+        );
+    }
+
+    /**
+     * @template TKey of key-of<TInput>
+     * @param TKey $key
+     */
     public function isPresent(string $key): bool
     {
         return in_array($key, $this->expectedKeys, true);

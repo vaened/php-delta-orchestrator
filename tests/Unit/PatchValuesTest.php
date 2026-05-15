@@ -12,6 +12,7 @@ use DateTime;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Stringable;
+use Vaened\DeltaOrchestrator\Patch\ArrayPatchValue;
 use Vaened\DeltaOrchestrator\Patch\BoolPatchValue;
 use Vaened\DeltaOrchestrator\Patch\DateTimeImmutablePatchValue;
 use Vaened\DeltaOrchestrator\Patch\FloatPatchValue;
@@ -91,5 +92,23 @@ final class PatchValuesTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
 
         new DateTimeImmutablePatchValue(true, 'no-date');
+    }
+
+    public function test_array_patch_value_normalizes_nested_patch_values(): void
+    {
+        $value = new ArrayPatchValue(true, [
+            'name' => new StringPatchValue(true, 'Juan'),
+            'meta' => [
+                'age' => new IntPatchValue(true, '20'),
+            ],
+        ]);
+
+        self::assertSame(
+            [
+                'name' => 'Juan',
+                'meta' => ['age' => 20],
+            ],
+            $value->value(),
+        );
     }
 }

@@ -59,13 +59,15 @@ final class PatchInputTest extends TestCase
                 'score'     => '10.5',
                 'enabled'   => 'true',
                 'startDate' => '2026-04-27 10:20:30',
+                'roles'     => ['admin', 'editor'],
             ],
-            expectedKeys: ['age', 'score', 'enabled', 'startDate'],
+            expectedKeys: ['age', 'score', 'enabled', 'startDate', 'roles'],
         );
 
         self::assertSame(20, $input->int('age')->value());
         self::assertSame(10.5, $input->float('score')->value());
         self::assertTrue($input->bool('enabled')->value());
         self::assertInstanceOf(DateTimeImmutable::class, $input->dateTimeImmutable('startDate')->value());
+        self::assertSame(['admin', 'editor'], $input->array('roles')->value());
     }
 }
