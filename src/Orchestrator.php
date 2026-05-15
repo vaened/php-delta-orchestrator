@@ -47,9 +47,14 @@ final class Orchestrator
 
             if ($failingBehavior !== null) {
                 throw new ActionBehaviorNotSatisfied(
-                    behavior         : $failingBehavior,
-                    field            : $failingBehavior->field(),
-                    actionDescription: $action->description(),
+                    behavior            : $failingBehavior,
+                    field               : $failingBehavior->field(),
+                    actionDescription   : $action->description(),
+                    progressUntilFailure: new ExecutionResult(
+                        total   : count($this->actions),
+                        executed: $executed,
+                        skipped : $skipped,
+                    ),
                 );
             }
 

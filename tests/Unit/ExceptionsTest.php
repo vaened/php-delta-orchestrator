@@ -47,6 +47,7 @@ final class ExceptionsTest extends TestCase
         );
 
         self::assertSame('Action behavior was not satisfied.', $exception->getMessage());
+        self::assertNull($exception->progressUntilFailure());
     }
 
     public function test_strict_comparison_type_mismatch_builds_message(): void

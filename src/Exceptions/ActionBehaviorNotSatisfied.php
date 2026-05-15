@@ -9,14 +9,16 @@ declare(strict_types=1);
 namespace Vaened\DeltaOrchestrator\Exceptions;
 
 use Vaened\DeltaOrchestrator\Bindings\Behavior;
+use Vaened\DeltaOrchestrator\ExecutionResult;
 use Vaened\DeltaOrchestrator\Field;
 
 final class ActionBehaviorNotSatisfied extends DeltaOrchestratorException
 {
     public function __construct(
-        private readonly Behavior $behavior,
-        private readonly Field    $field,
-        private readonly ?string  $actionDescription = null,
+        private readonly Behavior        $behavior,
+        private readonly Field           $field,
+        private readonly ?string         $actionDescription = null,
+        private readonly ?ExecutionResult $progressUntilFailure = null,
     )
     {
         parent::__construct(
@@ -39,5 +41,10 @@ final class ActionBehaviorNotSatisfied extends DeltaOrchestratorException
     public function field(): Field
     {
         return $this->field;
+    }
+
+    public function progressUntilFailure(): ?ExecutionResult
+    {
+        return $this->progressUntilFailure;
     }
 }

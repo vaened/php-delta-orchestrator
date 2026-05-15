@@ -131,6 +131,10 @@ final class OrchestratorTest extends TestCase
             self::assertSame('Update user profile', $exception->actionDescription());
             self::assertSame($field, $exception->field());
             self::assertInstanceOf(Behavior::class, $exception->behavior());
+            self::assertNotNull($exception->progressUntilFailure());
+            self::assertSame(1, $exception->progressUntilFailure()?->total());
+            self::assertSame(0, $exception->progressUntilFailure()?->executed());
+            self::assertSame(0, $exception->progressUntilFailure()?->skipped());
             self::assertSame(
                 'Action behavior was not satisfied: Update user profile.',
                 $exception->getMessage(),
