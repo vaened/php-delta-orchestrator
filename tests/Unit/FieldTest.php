@@ -84,9 +84,17 @@ final class FieldTest extends TestCase
         $field = $this->field(value: 'Juan', current: 'Pedro');
 
         self::assertTrue($field->isChanged());
+        self::assertSame('Juan', $field->changed());
         self::assertFalse($field->matches());
         self::assertSame('Pedro', $field->delta()?->previous());
         self::assertSame('Juan', $field->delta()?->next());
+    }
+
+    public function test_it_returns_null_changed_value_when_values_do_not_change(): void
+    {
+        $field = $this->field(value: 'Pedro', current: 'Pedro');
+
+        self::assertNull($field->changed());
     }
 
     public function test_it_uses_custom_comparator(): void

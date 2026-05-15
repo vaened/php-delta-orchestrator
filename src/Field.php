@@ -141,6 +141,14 @@ final class Field implements Behavior
     }
 
     /**
+     * @return TResolved|null
+     */
+    public function changed(): mixed
+    {
+        return $this->isChanged() ? $this->value() : null;
+    }
+
+    /**
      * @return Delta<TCurrent, TResolved>|null
      */
     public function delta(): ?Delta
