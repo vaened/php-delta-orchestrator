@@ -91,7 +91,7 @@ final class Orchestrator
     private function passesChanges(array $fields): bool
     {
         foreach ($fields as $field) {
-            if ($field->changed()) {
+            if ($field->isChanged()) {
                 return true;
             }
         }

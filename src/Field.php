@@ -135,7 +135,7 @@ final class Field implements Behavior
         return $this->value() !== null;
     }
 
-    public function changed(): bool
+    public function isChanged(): bool
     {
         return !$this->matches();
     }
@@ -145,7 +145,7 @@ final class Field implements Behavior
      */
     public function delta(): ?Delta
     {
-        if (!$this->changed()) {
+        if (!$this->isChanged()) {
             return null;
         }
 

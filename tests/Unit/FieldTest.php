@@ -46,7 +46,7 @@ final class FieldTest extends TestCase
     {
         $field = $this->field(value: 'Juan', current: 'Pedro', present: false);
 
-        self::assertFalse($field->changed());
+        self::assertFalse($field->isChanged());
         self::assertNull($field->delta());
     }
 
@@ -55,7 +55,7 @@ final class FieldTest extends TestCase
         $field = $this->field(value: 'Pedro', current: 'Pedro');
 
         self::assertTrue($field->matches());
-        self::assertFalse($field->changed());
+        self::assertFalse($field->isChanged());
         self::assertNull($field->delta());
     }
 
@@ -76,14 +76,14 @@ final class FieldTest extends TestCase
         );
 
         self::assertTrue($field->matches());
-        self::assertFalse($field->changed());
+        self::assertFalse($field->isChanged());
     }
 
     public function test_it_builds_delta_when_value_changes(): void
     {
         $field = $this->field(value: 'Juan', current: 'Pedro');
 
-        self::assertTrue($field->changed());
+        self::assertTrue($field->isChanged());
         self::assertFalse($field->matches());
         self::assertSame('Pedro', $field->delta()?->previous());
         self::assertSame('Juan', $field->delta()?->next());
@@ -105,7 +105,7 @@ final class FieldTest extends TestCase
         );
 
         self::assertTrue($field->matches());
-        self::assertFalse($field->changed());
+        self::assertFalse($field->isChanged());
         self::assertNull($field->delta());
     }
 
@@ -120,7 +120,7 @@ final class FieldTest extends TestCase
             });
 
         self::assertTrue($field->matches());
-        self::assertFalse($field->changed());
+        self::assertFalse($field->isChanged());
     }
 
     public function test_it_transforms_value_before_comparison_and_delta(): void
@@ -130,7 +130,7 @@ final class FieldTest extends TestCase
 
         self::assertSame('pedro', $field->value());
         self::assertTrue($field->matches());
-        self::assertFalse($field->changed());
+        self::assertFalse($field->isChanged());
         self::assertNull($field->delta());
     }
 
@@ -146,7 +146,7 @@ final class FieldTest extends TestCase
             });
 
         self::assertTrue($field->matches());
-        self::assertFalse($field->changed());
+        self::assertFalse($field->isChanged());
         self::assertSame('PEDRO', $field->value());
     }
 
