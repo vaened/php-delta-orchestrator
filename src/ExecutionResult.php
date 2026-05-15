@@ -49,6 +49,16 @@ final readonly class ExecutionResult
         return $this->skipped() > 0;
     }
 
+    public function isFullyApplied(): bool
+    {
+        return $this->total() > 0 && $this->executed() === $this->total();
+    }
+
+    public function isFullyIgnored(): bool
+    {
+        return $this->total() > 0 && $this->skipped() === $this->total();
+    }
+
     public function wasExecuted(string $description): bool
     {
         return in_array($description, $this->executed, true);

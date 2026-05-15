@@ -40,6 +40,8 @@ final class OrchestratorTest extends TestCase
         self::assertSame(1, $result->total());
         self::assertSame(0, $result->executed());
         self::assertSame(1, $result->skipped());
+        self::assertTrue($result->isFullyIgnored());
+        self::assertFalse($result->isFullyApplied());
     }
 
     public function test_it_executes_when_any_field_is_present_and_changed_by_default(): void
@@ -61,6 +63,8 @@ final class OrchestratorTest extends TestCase
         self::assertTrue($executed);
         self::assertSame(1, $result->executed());
         self::assertTrue($result->hasEffects());
+        self::assertTrue($result->isFullyApplied());
+        self::assertFalse($result->isFullyIgnored());
     }
 
     public function test_it_skips_action_when_fields_are_present_but_no_real_delta_exists(): void
