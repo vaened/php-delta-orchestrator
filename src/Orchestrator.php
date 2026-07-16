@@ -76,7 +76,7 @@ final class Orchestrator
 
     private function passesWhen(Action $action, array $fields): bool
     {
-        $when = $action->when();
+        $when = $action->condition();
 
         if ($when !== null) {
             $rule = $when(...$fields);

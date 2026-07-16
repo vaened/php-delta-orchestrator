@@ -13,7 +13,7 @@ use Vaened\DeltaOrchestrator\Bindings\Behavior;
 use Vaened\DeltaOrchestrator\Exceptions\InvalidActionDefinition;
 use Vaened\DeltaOrchestrator\Rules\Rule;
 
-final readonly class Action
+final class Action
 {
     /**
      * @param array<int, Field|Behavior> $fields
@@ -37,6 +37,18 @@ final readonly class Action
     }
 
     /**
+     * @param array<int, Field|Behavior> $fields
+     * @param Closure(Field ...$fields): mixed $apply
+     */
+    public static function from(array $fields, Closure $apply): self
+    {
+        return new self(
+            fields: $fields,
+            apply : $apply,
+        );
+    }
+
+    /**
      * @return array<int, Field|Behavior>
      */
     public function fields(): array
@@ -55,7 +67,7 @@ final readonly class Action
     /**
      * @return (Closure(Field ...$fields): Rule)|null
      */
-    public function when(): ?Closure
+    public function condition(): ?Closure
     {
         return $this->when;
     }
@@ -63,5 +75,22 @@ final readonly class Action
     public function description(): ?string
     {
         return $this->description;
+    }
+
+    /**
+     * @param Closure(Field ...$fields): Rule $when
+     */
+    public function when(Closure $when): self
+    {
+        $this->when = $when;
+
+        return $this;
+    }
+
+    public function describe(string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
     }
 }

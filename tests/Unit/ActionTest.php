@@ -11,7 +11,10 @@ namespace Vaened\DeltaOrchestrator\Tests\Unit;
 use Vaened\DeltaOrchestrator\Action;
 use Vaened\DeltaOrchestrator\Exceptions\InvalidActionDefinition;
 use Vaened\DeltaOrchestrator\Field;
+use Vaened\DeltaOrchestrator\Rules\Rule;
 use Vaened\DeltaOrchestrator\Tests\TestCase;
+
+use function Vaened\DeltaOrchestrator\Rules\all;
 
 final class ActionTest extends TestCase
 {
@@ -37,5 +40,49 @@ final class ActionTest extends TestCase
         );
 
         self::assertSame('Update user profile', $action->description());
+    }
+
+    public function test_it_can_be_created_from_named_constructor(): void
+    {
+        $field  = $this->field(value: 'Juan');
+        $action = Action::from(
+            fields: [$field],
+            apply : static function (Field ...$fields): void {
+            },
+        );
+
+        self::assertSame([$field], $action->fields());
+    }
+
+    public function test_it_can_be_described_fluently(): void
+    {
+        $action = Action::from(
+            fields: [$this->field(value: 'Juan')],
+            apply : static function (Field ...$fields): void {
+            },
+        );
+
+        $described = $action->describe('Update user profile');
+
+        self::assertSame($action, $described);
+        self::assertSame('Update user profile', $action->description());
+    }
+
+    public function test_it_can_define_when_condition_fluently(): void
+    {
+        $action = Action::from(
+            fields: [$this->field(value: 'Juan')],
+            apply : static function (Field ...$fields): void {
+            },
+        );
+
+        $conditioned = $action->when(
+            static function (Field $field): Rule {
+                return all([$field]);
+            },
+        );
+
+        self::assertSame($action, $conditioned);
+        self::assertNotNull($action->condition());
     }
 }
