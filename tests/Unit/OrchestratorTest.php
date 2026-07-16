@@ -8,7 +8,9 @@ declare(strict_types=1);
 
 namespace Vaened\DeltaOrchestrator\Tests\Unit;
 
+use RuntimeException;
 use Vaened\DeltaOrchestrator\Action;
+use Vaened\DeltaOrchestrator\ActionFailure;
 use Vaened\DeltaOrchestrator\Bindings\Behavior;
 use Vaened\DeltaOrchestrator\Exceptions\ActionBehaviorNotSatisfied;
 use Vaened\DeltaOrchestrator\Field;
@@ -143,6 +145,39 @@ final class OrchestratorTest extends TestCase
                 'Action behavior was not satisfied: Update user profile.',
                 $exception->getMessage(),
             );
+        }
+    }
+
+    public function test_it_preserves_action_failure_and_allows_custom_rethrow(): void
+    {
+        $field  = $this->field(value: null, current: 'Pedro', present: true);
+        $action = Action::from(
+            fields: [$field->required()],
+            apply : static function (Field ...$fields): void {
+            },
+        )
+            ->describe('Update user profile')
+            ->or(
+                static function (ActionFailure $failure): RuntimeException {
+                    return new RuntimeException('Custom failure', previous: $failure);
+                },
+            );
+
+        try {
+            (new Orchestrator())->register($action)->execute();
+
+            self::fail('Expected ActionBehaviorNotSatisfied to be thrown.');
+        } catch (ActionBehaviorNotSatisfied $exception) {
+            self::assertSame('Update user profile', $exception->actionDescription());
+            self::assertNotNull($exception->progressUntilFailure());
+
+            try {
+                $exception->rethrow();
+                self::fail('Expected RuntimeException to be thrown.');
+            } catch (RuntimeException $custom) {
+                self::assertSame('Custom failure', $custom->getMessage());
+                self::assertSame($exception, $custom->getPrevious());
+            }
         }
     }
 }

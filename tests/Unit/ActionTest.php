@@ -8,7 +8,9 @@ declare(strict_types=1);
 
 namespace Vaened\DeltaOrchestrator\Tests\Unit;
 
+use RuntimeException;
 use Vaened\DeltaOrchestrator\Action;
+use Vaened\DeltaOrchestrator\ActionFailure;
 use Vaened\DeltaOrchestrator\Exceptions\InvalidActionDefinition;
 use Vaened\DeltaOrchestrator\Field;
 use Vaened\DeltaOrchestrator\Rules\Rule;
@@ -33,10 +35,10 @@ final class ActionTest extends TestCase
     public function test_it_exposes_description(): void
     {
         $action = new Action(
-            fields      : [$this->field(value: 'Juan')],
-            apply       : static function (Field ...$fields): void {
+            fields     : [$this->field(value: 'Juan')],
+            apply      : static function (Field ...$fields): void {
             },
-            description : 'Update user profile',
+            description: 'Update user profile',
         );
 
         self::assertSame('Update user profile', $action->description());
@@ -84,5 +86,23 @@ final class ActionTest extends TestCase
 
         self::assertSame($action, $conditioned);
         self::assertNotNull($action->condition());
+    }
+
+    public function test_it_can_define_custom_failure_fluently(): void
+    {
+        $action = Action::from(
+            fields: [$this->field(value: 'Juan')],
+            apply : static function (Field ...$fields): void {
+            },
+        );
+
+        $configured = $action->or(
+            static function (ActionFailure $failure): RuntimeException {
+                return new RuntimeException($failure->getMessage(), previous: $failure);
+            },
+        );
+
+        self::assertSame($action, $configured);
+        self::assertNotNull($action->failureFactory());
     }
 }

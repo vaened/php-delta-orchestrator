@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Vaened\DeltaOrchestrator;
 
 use Closure;
+use Throwable;
 use Vaened\DeltaOrchestrator\Bindings\Behavior;
 use Vaened\DeltaOrchestrator\Exceptions\InvalidActionDefinition;
 use Vaened\DeltaOrchestrator\Rules\Rule;
@@ -20,12 +21,14 @@ final class Action
      * @param Closure(Field ...$fields): mixed $apply
      * @param (Closure(Field ...$fields): Rule)|null $when
      * @param string|null $description
+     * @param (Closure(ActionFailure): Throwable)|null $failureFactory
      */
     public function __construct(
-        private array    $fields,
-        private Closure  $apply,
-        private ?Closure $when = null,
-        private ?string  $description = null,
+        private readonly array   $fields,
+        private readonly Closure $apply,
+        private ?Closure         $when = null,
+        private ?string          $description = null,
+        private ?Closure         $failureFactory = null,
     )
     {
         if ($this->fields === []) {
@@ -78,6 +81,14 @@ final class Action
     }
 
     /**
+     * @return (Closure(ActionFailure): Throwable)|null
+     */
+    public function failureFactory(): ?Closure
+    {
+        return $this->failureFactory;
+    }
+
+    /**
      * @param Closure(Field ...$fields): Rule $when
      */
     public function when(Closure $when): self
@@ -90,6 +101,16 @@ final class Action
     public function describe(string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * @param Closure(ActionFailure): Throwable $failureFactory
+     */
+    public function or(Closure $failureFactory): self
+    {
+        $this->failureFactory = $failureFactory;
 
         return $this;
     }

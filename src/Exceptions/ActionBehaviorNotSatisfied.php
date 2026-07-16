@@ -8,17 +8,21 @@ declare(strict_types=1);
 
 namespace Vaened\DeltaOrchestrator\Exceptions;
 
+use Closure;
+use Throwable;
+use Vaened\DeltaOrchestrator\ActionFailure;
 use Vaened\DeltaOrchestrator\Bindings\Behavior;
 use Vaened\DeltaOrchestrator\ExecutionResult;
 use Vaened\DeltaOrchestrator\Field;
 
-final class ActionBehaviorNotSatisfied extends DeltaOrchestratorException
+final class ActionBehaviorNotSatisfied extends DeltaOrchestratorException implements ActionFailure
 {
     public function __construct(
-        private readonly Behavior        $behavior,
-        private readonly Field           $field,
-        private readonly ?string         $actionDescription = null,
+        private readonly Behavior         $behavior,
+        private readonly Field            $field,
+        private readonly ?string          $actionDescription = null,
         private readonly ?ExecutionResult $progressUntilFailure = null,
+        private readonly ?Closure         $failureFactory = null,
     )
     {
         parent::__construct(
@@ -46,5 +50,20 @@ final class ActionBehaviorNotSatisfied extends DeltaOrchestratorException
     public function progressUntilFailure(): ?ExecutionResult
     {
         return $this->progressUntilFailure;
+    }
+
+    /**
+     * @return (Closure(ActionFailure): Throwable)|null
+     */
+    public function failureFactory(): ?Closure
+    {
+        return $this->failureFactory;
+    }
+
+    public function rethrow(): never
+    {
+        throw $this->failureFactory !== null
+            ? ($this->failureFactory)($this)
+            : $this;
     }
 }

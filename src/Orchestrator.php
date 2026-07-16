@@ -55,6 +55,7 @@ final class Orchestrator
                         executed: $executed,
                         skipped : $skipped,
                     ),
+                    failureFactory      : $action->failureFactory(),
                 );
             }
 

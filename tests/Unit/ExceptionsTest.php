@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace Vaened\DeltaOrchestrator\Tests\Unit;
 
+use RuntimeException;
+use Vaened\DeltaOrchestrator\ActionFailure;
 use Vaened\DeltaOrchestrator\Exceptions\ActionBehaviorNotSatisfied;
 use Vaened\DeltaOrchestrator\Exceptions\ComparisonTypeMismatch;
 use Vaened\DeltaOrchestrator\Exceptions\InvalidActionDefinition;
@@ -48,6 +50,25 @@ final class ExceptionsTest extends TestCase
 
         self::assertSame('Action behavior was not satisfied.', $exception->getMessage());
         self::assertNull($exception->progressUntilFailure());
+    }
+
+    public function test_action_behavior_not_satisfied_can_rethrow_custom_failure(): void
+    {
+        $field     = $this->field(value: null, current: 'Pedro', present: true);
+        $exception = new ActionBehaviorNotSatisfied(
+            behavior      : $field->required(),
+            field         : $field,
+            failureFactory: static function (ActionFailure $failure): RuntimeException {
+                return new RuntimeException('Custom failure', previous: $failure);
+            },
+        );
+
+        try {
+            $exception->rethrow();
+        } catch (RuntimeException $custom) {
+            self::assertSame('Custom failure', $custom->getMessage());
+            self::assertSame($exception, $custom->getPrevious());
+        }
     }
 
     public function test_strict_comparison_type_mismatch_builds_message(): void
