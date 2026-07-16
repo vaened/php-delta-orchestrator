@@ -21,13 +21,15 @@ $endDate = Field::from(
 
 $orchestrator = new Orchestrator();
 
-$orchestrator->register(new Action(
-    fields: [$startDate, $endDate],
-    // runs only if the action applies, contract is satisfied, and there is an effective delta
-    apply: function (Field $startDate, Field $endDate): void {
-        // use $field->delta(), $field->value(), $field->current()
-    },
-));
+$orchestrator->register(
+    Action::from(
+        fields: [$startDate, $endDate],
+        // runs only if the action applies, contract is satisfied, and there is an effective delta
+        apply : function (Field $startDate, Field $endDate): void {
+            // use $field->delta(), $field->value(), $field->current()
+        },
+    ),
+);
 
 $result = $orchestrator->execute();
 ```
@@ -144,12 +146,9 @@ $endDate = Field::from(
 You can also transform the incoming patch value before comparison and action execution:
 
 ```php
-$name = Field::from(
-    patch  : $payload->name,
-    current: $current->name,
-)
-    ->transform(static fn(string $value): string => strtolower(trim($value)))
-    ->using(comparator: StrictComparator::create());
+$name = Field::from(patch  : $payload->name, current: $current->name)
+             ->transform(static fn(string $value): string => strtolower(trim($value)))
+             ->using(comparator: StrictComparator::create());
 ```
 
 Each [`Field`](src/Field.php) exposes:
@@ -167,14 +166,33 @@ Each [`Field`](src/Field.php) exposes:
 You define what should happen when a combination of fields applies through an [`Action`](src/Action.php).
 
 ```php
-$orchestrator->register(new Action(
-    fields     : [$startDate, $endDate],
-    apply      : function (Field $startDate, Field $endDate): void {
-        // call to application/domain service
-    },
-    when: static fn(Field ...$fields) => any($fields),
-    description: 'Update availability period',
-));
+$orchestrator->register(
+    Action::from(
+        fields: [$startDate, $endDate],
+        apply : function (Field $startDate, Field $endDate): void {
+            // call to application/domain service
+        },
+    )->when(static fn(Field ...$fields) => any($fields))
+     ->describe('Update availability period'),
+);
+```
+
+You can also define a custom failure to be rethrown later:
+
+```php
+$orchestrator->register(
+    Action::from(
+        fields: [$startDate->required(), $endDate->optional()],
+        apply : function (Field $startDate, Field $endDate): void {
+            // call to application/domain service
+        },
+    )
+        ->describe('Update availability period')
+        ->or(static fn(ActionFailure $failure) => new DomainException(
+            message : 'The action contract was not satisfied.',
+            previous: $failure,
+        )),
+);
 ```
 
 #### Behaviors
@@ -200,7 +218,12 @@ By default, an action applies if **at least one field is present**.
 You can define custom rules:
 
 ```php
-when: static fn(Field ...$fields) => all($fields)
+Action::from(
+    fields: [$startDate, $endDate],
+    apply : static function (Field $startDate, Field $endDate): void {
+        // ...
+    },
+)->when(static fn(Field ...$fields) => all($fields));
 ```
 
 ### 4) Execute orchestrator
@@ -218,11 +241,24 @@ The [`Orchestrator`](src/Orchestrator.php) performs:
 
 `execute()` returns an [`ExecutionResult`](src/ExecutionResult.php), so you can react to the run outcome:
 
+When a required behavior is not satisfied, `execute()` throws [`ActionBehaviorNotSatisfied`](src/Exceptions/ActionBehaviorNotSatisfied.php).
+If the action
+defined a custom `or(...)` strategy, you can inspect the failure first and then relaunch it with `rethrow()`.
+
 It includes totals and execution state (`total`, `executed`, `skipped`) plus helper checks and description-based lookups.
 
 ```php
 if ($result->hasEffects()) {
     // persist / publish events
+}
+```
+
+```php
+try {
+    $orchestrator->execute();
+} catch (ActionBehaviorNotSatisfied $failure) {
+    // inspect $failure->progressUntilFailure(), $failure->field(), etc.
+    $failure->rethrow();
 }
 ```
 
@@ -277,13 +313,12 @@ all([
 Advanced details on how to define custom activation rules.
 
 ```php
-$action = new Action(
+$action = Action::from(
     fields: [$startDate, $endDate],
-    when  : static fn(Field ...$fields) => all($fields),
     apply : static function (Field $startDate, Field $endDate): void {
         // ...
     },
-);
+)->when(static fn(Field ...$fields) => all($fields));
 ```
 
 `when` determines whether the action participates in the current patch.
