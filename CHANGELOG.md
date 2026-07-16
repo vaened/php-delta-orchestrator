@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-07-16
+
+### Added
+
+- Added the fluent `Action` API with `Action::from(...)`, `Action::describe(...)`, and `Action::or(...)`.
+- Added the `ActionFailure` contract to expose failure context (`behavior`, `field`, `actionDescription`, `progressUntilFailure`) to
+  custom failure factories.
+- Added support for deferred custom failure rethrows through `ActionBehaviorNotSatisfied::rethrow()`.
+
+### Changed
+
+- `Action::when()` now configures the activation rule fluently instead of exposing the stored closure.
+- `Action::condition()` now exposes the configured activation closure for internal/runtime access.
+- `Action` is now mutable and behaves as a fluent builder/factory during action definition.
+- `ActionBehaviorNotSatisfied` now remains the primary orchestration failure, even when a custom failure strategy is configured, so
+  progress information is always preserved before any rethrow.
+- Updated README examples and usage guidance to reflect the fluent `Action` API and custom failure rethrow flow.
+
+### Tests
+
+- Added and updated coverage for:
+    - fluent `Action` definition through `from(...)`, `when(...)`, `describe(...)`, and `or(...)`
+    - preserving `ActionBehaviorNotSatisfied` before relaunching a custom exception
+    - custom failure rethrow behavior through the `ActionFailure` contract
+
 ## [0.5.2] - 2026-05-15
 
 ### Fixed
