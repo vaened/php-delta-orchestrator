@@ -237,6 +237,21 @@ Action::from(
 )->when(All::isPresent());
 ```
 
+If you want to treat `when(...)` like an inline boolean guard, you can wrap it as a rule:
+
+```php
+Action::from(
+    fields: [$startDate, $endDate],
+    apply : static function (Field $startDate, Field $endDate): void {
+        // ...
+    },
+)->when(Boolean::resolve(
+    static function(Field $startDate, Field $endDate): bool {
+        // custom guard: skip this action entirely when an external policy forbids the update
+    }
+));
+```
+
 ### 4) Execute orchestrator
 
 ```php
@@ -329,7 +344,7 @@ $action = Action::from(
     apply : static function (Field $startDate, Field $endDate): void {
         // ...
     },
-)->when(static fn(Field ...$fields) => all($fields));
+)->when(All::isPresent());;
 ```
 
 `when` determines whether the action participates in the current patch.
