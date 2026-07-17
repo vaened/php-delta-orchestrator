@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.1] - 2026-07-17
+
+### Fixed
+
+- Restored `PatchValue` as the public interface for custom implementations instead of forcing consumers to extend an abstract base class.
+- Moved the shared `from(...)`, `present(...)`, `missing()`, and normalization flow into `NormalizablePatchValue` for the built-in patch value implementations.
+- Updated tests and release notes to reflect the interface-plus-shared-base split.
+
 ## [0.7.0] - 2026-07-17
 
 ### Added
