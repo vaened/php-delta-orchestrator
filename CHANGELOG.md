@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2026-07-17
+
+### Added
+
+- Added shared PatchValue named constructors: `from(bool $present, mixed $value)`, `present(...)`, and `missing()`.
+
+### Changed
+
+- Promoted `PatchValue` from interface to abstract base class so all concrete patch values share the same construction API and common
+  presence/value state handling.
+- Updated README examples to document direct PatchValue instantiation through the new named constructors.
+
+### Tests
+
+- Added coverage for the shared PatchValue named constructors across present and missing cases.
+
 ## [0.6.2] - 2026-07-17
 
 ### Fixed
