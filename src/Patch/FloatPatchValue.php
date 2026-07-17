@@ -11,34 +11,19 @@ namespace Vaened\DeltaOrchestrator\Patch;
 use InvalidArgumentException;
 
 /**
- * @implements PatchValue<float|null>
+ * @extends PatchValue<float|null>
  */
-final readonly class FloatPatchValue implements PatchValue
+final readonly class FloatPatchValue extends PatchValue
 {
-    private bool $present;
-
-    private ?float $value;
-
     public function __construct(
         bool $present,
         int|float|string|null $value,
     )
     {
-        $this->present = $present;
-        $this->value   = self::normalize($value);
+        parent::__construct($present, $value);
     }
 
-    public function isPresent(): bool
-    {
-        return $this->present;
-    }
-
-    public function value(): ?float
-    {
-        return $this->value;
-    }
-
-    private static function normalize(int|float|string|null $value): ?float
+    protected static function normalize(mixed $value): ?float
     {
         if ($value === null) {
             return null;

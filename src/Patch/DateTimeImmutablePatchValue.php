@@ -14,34 +14,19 @@ use Exception;
 use InvalidArgumentException;
 
 /**
- * @implements PatchValue<DateTimeImmutable|null>
+ * @extends PatchValue<DateTimeImmutable|null>
  */
-final readonly class DateTimeImmutablePatchValue implements PatchValue
+final readonly class DateTimeImmutablePatchValue extends PatchValue
 {
-    private bool $present;
-
-    private ?DateTimeImmutable $value;
-
     public function __construct(
         bool $present,
         DateTimeInterface|string|null $value,
     )
     {
-        $this->present = $present;
-        $this->value   = self::normalize($value);
+        parent::__construct($present, $value);
     }
 
-    public function isPresent(): bool
-    {
-        return $this->present;
-    }
-
-    public function value(): ?DateTimeImmutable
-    {
-        return $this->value;
-    }
-
-    private static function normalize(DateTimeInterface|string|null $value): ?DateTimeImmutable
+    protected static function normalize(mixed $value): ?DateTimeImmutable
     {
         if ($value === null) {
             return null;

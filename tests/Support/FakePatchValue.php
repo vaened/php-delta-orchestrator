@@ -13,30 +13,23 @@ use Vaened\DeltaOrchestrator\Patch\PatchValue;
 /**
  * @template TValue
  *
- * @implements PatchValue<TValue>
+ * @extends PatchValue<TValue>
  */
-final readonly class FakePatchValue implements PatchValue
+final readonly class FakePatchValue extends PatchValue
 {
     /**
      * @param TValue $value
      */
     public function __construct(
-        private bool $present,
-        private mixed $value,
+        bool $present,
+        mixed $value,
     )
     {
+        parent::__construct($present, $value);
     }
 
-    public function isPresent(): bool
+    protected static function normalize(mixed $value): mixed
     {
-        return $this->present;
-    }
-
-    /**
-     * @return TValue
-     */
-    public function value(): mixed
-    {
-        return $this->value;
+        return $value;
     }
 }

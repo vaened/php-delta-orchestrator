@@ -111,4 +111,16 @@ final class PatchValuesTest extends TestCase
             $value->value(),
         );
     }
+
+    public function test_patch_value_named_constructors_cover_generic_present_and_missing_cases(): void
+    {
+        self::assertSame('Juan', StringPatchValue::from(true, 'Juan')->value());
+        self::assertTrue(StringPatchValue::from(true, 'Juan')->isPresent());
+
+        self::assertSame(20, IntPatchValue::present('20')->value());
+        self::assertTrue(IntPatchValue::present('20')->isPresent());
+
+        self::assertNull(BoolPatchValue::missing()->value());
+        self::assertFalse(BoolPatchValue::missing()->isPresent());
+    }
 }

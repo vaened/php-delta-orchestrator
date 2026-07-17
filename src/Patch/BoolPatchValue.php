@@ -11,34 +11,19 @@ namespace Vaened\DeltaOrchestrator\Patch;
 use InvalidArgumentException;
 
 /**
- * @implements PatchValue<bool|null>
+ * @extends PatchValue<bool|null>
  */
-final readonly class BoolPatchValue implements PatchValue
+final readonly class BoolPatchValue extends PatchValue
 {
-    private bool $present;
-
-    private ?bool $value;
-
     public function __construct(
         bool $present,
         bool|int|string|null $value,
     )
     {
-        $this->present = $present;
-        $this->value   = self::normalize($value);
+        parent::__construct($present, $value);
     }
 
-    public function isPresent(): bool
-    {
-        return $this->present;
-    }
-
-    public function value(): ?bool
-    {
-        return $this->value;
-    }
-
-    private static function normalize(bool|int|string|null $value): ?bool
+    protected static function normalize(mixed $value): ?bool
     {
         if ($value === null || is_bool($value)) {
             return $value;

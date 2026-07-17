@@ -9,17 +9,10 @@ declare(strict_types=1);
 namespace Vaened\DeltaOrchestrator\Patch;
 
 /**
- * @implements PatchValue<array<mixed>|null>
+ * @extends PatchValue<array<mixed>|null>
  */
-final readonly class ArrayPatchValue implements PatchValue
+final readonly class ArrayPatchValue extends PatchValue
 {
-    private bool $present;
-
-    /**
-     * @var array<mixed>|null
-     */
-    private ?array $value;
-
     /**
      * @param array<mixed>|null $value
      */
@@ -27,28 +20,14 @@ final readonly class ArrayPatchValue implements PatchValue
         bool $present,
         ?array $value,
     ) {
-        $this->present = $present;
-        $this->value   = self::normalize($value);
-    }
-
-    public function isPresent(): bool
-    {
-        return $this->present;
-    }
-
-    /**
-     * @return array<mixed>|null
-     */
-    public function value(): ?array
-    {
-        return $this->value;
+        parent::__construct($present, $value);
     }
 
     /**
      * @param array<mixed>|null $value
      * @return array<mixed>|null
      */
-    private static function normalize(?array $value): ?array
+    protected static function normalize(mixed $value): ?array
     {
         if ($value === null) {
             return null;
