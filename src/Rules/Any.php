@@ -8,11 +8,20 @@ declare(strict_types=1);
 
 namespace Vaened\DeltaOrchestrator\Rules;
 
+use Closure;
 use Vaened\DeltaOrchestrator\Field;
 
 final readonly class Any implements Rule
 {
     use HasCompositeRules;
+
+    /**
+     * @return Closure(Field ...$fields): Any
+     */
+    public static function isPresent(): Closure
+    {
+        return static fn(Field ...$fields): self => new self($fields);
+    }
 
     /**
      * @var array<int, Rule>

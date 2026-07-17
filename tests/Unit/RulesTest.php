@@ -67,4 +67,28 @@ final class RulesTest extends TestCase
 
         self::assertFalse($rule->satisfies());
     }
+
+    public function test_any_is_present_named_constructor_builds_when_closure(): void
+    {
+        $when = Any::isPresent();
+
+        self::assertTrue(
+            $when(
+                $this->field(value: 'Juan', present: false),
+                $this->field(value: 'Pedro', present: true),
+            )->satisfies(),
+        );
+    }
+
+    public function test_all_is_present_named_constructor_builds_when_closure(): void
+    {
+        $when = All::isPresent();
+
+        self::assertFalse(
+            $when(
+                $this->field(value: 'Juan', present: true),
+                $this->field(value: 'Pedro', present: false),
+            )->satisfies(),
+        );
+    }
 }

@@ -226,6 +226,17 @@ Action::from(
 )->when(static fn(Field ...$fields) => all($fields));
 ```
 
+For the common presence-based cases, you can pass the provided named constructors directly:
+
+```php
+Action::from(
+    fields: [$startDate, $endDate],
+    apply : static function (Field $startDate, Field $endDate): void {
+        // ...
+    },
+)->when(All::isPresent());
+```
+
 ### 4) Execute orchestrator
 
 ```php
