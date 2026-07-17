@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1] - 2026-07-17
+
+### Added
+
+- Added `Any::isPresent()` and `All::isPresent()` as named constructors that return `when(...)`-compatible callbacks for the most common
+  presence-based activation rules.
+- Added `Rules\Boolean` with `Boolean::from(...)` and `Boolean::resolve(...)` to wrap fixed booleans and custom boolean guards as rules.
+
+### Changed
+
+- Updated README activation rule examples to use the new `All::isPresent()` syntax for common cases and to clarify boolean guard usage for
+  custom action activation checks.
+
+### Tests
+
+- Added coverage for:
+    - `Any::isPresent()` and `All::isPresent()` named constructors
+    - `Boolean::from(...)` and `Boolean::resolve(...)`
+
 ## [0.6.0] - 2026-07-16
 
 ### Added
