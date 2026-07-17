@@ -14,9 +14,9 @@ use Exception;
 use InvalidArgumentException;
 
 /**
- * @extends PatchValue<DateTimeImmutable|null>
+ * @extends NormalizablePatchValue<DateTimeImmutable|null>
  */
-final readonly class DateTimeImmutablePatchValue extends PatchValue
+final readonly class DateTimeImmutablePatchValue extends NormalizablePatchValue
 {
     public function __construct(
         bool $present,

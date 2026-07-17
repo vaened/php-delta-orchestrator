@@ -11,9 +11,9 @@ namespace Vaened\DeltaOrchestrator\Patch;
 use Stringable;
 
 /**
- * @extends PatchValue<string|null>
+ * @extends NormalizablePatchValue<string|null>
  */
-final readonly class StringPatchValue extends PatchValue
+final readonly class StringPatchValue extends NormalizablePatchValue
 {
     public function __construct(
         bool $present,

@@ -9,17 +9,18 @@ declare(strict_types=1);
 namespace Vaened\DeltaOrchestrator\Patch;
 
 /**
- * @extends PatchValue<array<mixed>|null>
+ * @extends NormalizablePatchValue<array|null>
  */
-final readonly class ArrayPatchValue extends PatchValue
+final readonly class ArrayPatchValue extends NormalizablePatchValue
 {
     /**
      * @param array<mixed>|null $value
      */
     public function __construct(
-        bool $present,
+        bool   $present,
         ?array $value,
-    ) {
+    )
+    {
         parent::__construct($present, $value);
     }
 

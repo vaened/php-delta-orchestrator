@@ -11,9 +11,9 @@ namespace Vaened\DeltaOrchestrator\Patch;
 use InvalidArgumentException;
 
 /**
- * @extends PatchValue<int|null>
+ * @extends NormalizablePatchValue<int|null>
  */
-final readonly class IntPatchValue extends PatchValue
+final readonly class IntPatchValue extends NormalizablePatchValue
 {
     public function __construct(
         bool $present,
