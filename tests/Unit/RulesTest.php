@@ -14,6 +14,7 @@ use Vaened\DeltaOrchestrator\Rules\Boolean;
 use Vaened\DeltaOrchestrator\Rules\Present;
 use Vaened\DeltaOrchestrator\Tests\TestCase;
 
+use function call_user_func;
 use function Vaened\DeltaOrchestrator\Rules\all;
 use function Vaened\DeltaOrchestrator\Rules\any;
 
@@ -93,10 +94,23 @@ final class RulesTest extends TestCase
         );
     }
 
-    public function test_boolean_from_wraps_fixed_value_as_rule(): void
+    public function test_boolean_from_builds_when_closure(): void
     {
-        self::assertTrue(Boolean::from(true)->satisfies());
-        self::assertFalse(Boolean::from(false)->satisfies());
+        $when = Boolean::from(true);
+
+        self::assertTrue(
+            $when(
+                $this->field(value: 'Juan', present: false),
+            )->satisfies(),
+        );
+
+        $when = Boolean::from(false);
+
+        self::assertFalse(
+            $when(
+                $this->field(value: 'Juan', present: true),
+            )->satisfies(),
+        );
     }
 
     public function test_boolean_resolve_builds_when_closure(): void

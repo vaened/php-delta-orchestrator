@@ -237,6 +237,17 @@ Action::from(
 )->when(All::isPresent());
 ```
 
+If the decision was already resolved elsewhere, you can pass the resulting boolean directly:
+
+```php
+Action::from(
+    fields: [$startDate, $endDate],
+    apply : static function (Field $startDate, Field $endDate): void {
+        // ...
+    },
+)->when(Boolean::from($shouldUpdateAvailability));
+```
+
 If you want to treat `when(...)` like an inline boolean guard, you can wrap it as a rule:
 
 ```php

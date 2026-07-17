@@ -19,9 +19,9 @@ final readonly class Boolean implements Rule
     {
     }
 
-    public static function from(bool $value): self
+    public static function from(bool $value): Closure
     {
-        return new self($value);
+        return static fn(Field ...$fields): self => new self($value);
     }
 
     /**
