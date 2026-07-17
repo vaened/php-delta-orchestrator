@@ -10,6 +10,7 @@ namespace Vaened\DeltaOrchestrator\Tests\Unit;
 
 use Vaened\DeltaOrchestrator\Rules\All;
 use Vaened\DeltaOrchestrator\Rules\Any;
+use Vaened\DeltaOrchestrator\Rules\Boolean;
 use Vaened\DeltaOrchestrator\Rules\Present;
 use Vaened\DeltaOrchestrator\Tests\TestCase;
 
@@ -83,6 +84,26 @@ final class RulesTest extends TestCase
     public function test_all_is_present_named_constructor_builds_when_closure(): void
     {
         $when = All::isPresent();
+
+        self::assertFalse(
+            $when(
+                $this->field(value: 'Juan', present: true),
+                $this->field(value: 'Pedro', present: false),
+            )->satisfies(),
+        );
+    }
+
+    public function test_boolean_from_wraps_fixed_value_as_rule(): void
+    {
+        self::assertTrue(Boolean::from(true)->satisfies());
+        self::assertFalse(Boolean::from(false)->satisfies());
+    }
+
+    public function test_boolean_resolve_builds_when_closure(): void
+    {
+        $when = Boolean::resolve(
+            static fn($startDate, $endDate): bool => $startDate->isPresent() && $endDate->isPresent(),
+        );
 
         self::assertFalse(
             $when(
