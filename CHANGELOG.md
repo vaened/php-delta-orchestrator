@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.2] - 2026-07-17
+
+### Fixed
+
+- Aligned `Rules\Boolean::from(...)` with the `when(...)` callback contract so fixed boolean guards can be used with the same syntax as
+  `Boolean::resolve(...)`.
+- Updated tests and README examples to reflect the callback-based boolean guard usage and the intended custom activation semantics.
+
 ## [0.6.1] - 2026-07-17
 
 ### Added
