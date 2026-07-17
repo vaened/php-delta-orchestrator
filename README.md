@@ -122,6 +122,14 @@ $endDate   = $input->dateTimeImmutable('end_date');
 * presence (`isPresent()`)
 * incoming value (`value()`), potentially normalized
 
+Concrete patch values also expose lightweight named constructors when you want to instantiate them directly:
+
+```php
+$name = StringPatchValue::from(true, 'Juan');
+$email = StringPatchValue::present('juan@example.com');
+$timezone = StringPatchValue::missing();
+```
+
 ### 2) Define fields
 
 You connect the patch with the current state using [`Field::from()`](src/Field.php). Each `patch` represents a `PatchValue`, not the final
