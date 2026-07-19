@@ -154,7 +154,7 @@ $endDate = Field::from(
 You can also transform the incoming patch value before comparison and action execution:
 
 ```php
-$name = Field::from(patch  : $payload->name, current: $current->name)
+$name = Field::from(patch: $payload->name, current: $current->name)
              ->transform(static fn(string $value): string => strtolower(trim($value)))
              ->using(comparator: StrictComparator::create());
 ```
