@@ -52,6 +52,14 @@ final class Action
     }
 
     /**
+     * @param array<int, Field|Behavior> $fields
+     */
+    public static function for(array $fields): Scope
+    {
+        return Scope::from($fields);
+    }
+
+    /**
      * @return array<int, Field|Behavior>
      */
     public function fields(): array

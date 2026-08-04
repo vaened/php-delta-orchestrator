@@ -56,6 +56,17 @@ final class ActionTest extends TestCase
         self::assertSame([$field], $action->fields());
     }
 
+    public function test_it_can_be_created_from_scope_builder(): void
+    {
+        $field  = $this->field(value: 'Juan');
+        $action = Action::for([$field])->apply(
+            static function (Field ...$fields): void {
+            },
+        );
+
+        self::assertSame([$field], $action->fields());
+    }
+
     public function test_it_can_be_described_fluently(): void
     {
         $action = Action::from(
