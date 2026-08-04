@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.2] - 2026-08-04
+
+### Added
+
+- Added `Action::for(...)->apply(...)` as a grouped field builder for defining actions in two steps: selecting the field scope first and
+  then providing the execution callback.
+
+### Changed
+
+- Updated README examples to prefer the new `Action::for(...)->apply(...)` syntax in action definitions and activation rule examples.
+
 ## [0.7.1] - 2026-07-17
 
 ### Fixed
