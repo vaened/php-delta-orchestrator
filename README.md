@@ -22,13 +22,11 @@ $endDate = Field::from(
 $orchestrator = new Orchestrator();
 
 $orchestrator->register(
-    Action::from(
-        fields: [$startDate, $endDate],
+    Action::for([$startDate, $endDate])
         // runs only if the action applies, contract is satisfied, and there is an effective delta
-        apply : function (Field $startDate, Field $endDate): void {
+        ->apply(function (Field $startDate, Field $endDate): void {
             // use $field->delta(), $field->value(), $field->current()
-        },
-    ),
+        }),
 );
 
 $result = $orchestrator->execute();
@@ -175,13 +173,12 @@ You define what should happen when a combination of fields applies through an [`
 
 ```php
 $orchestrator->register(
-    Action::from(
-        fields: [$startDate, $endDate],
-        apply : function (Field $startDate, Field $endDate): void {
+    Action::for([$startDate, $endDate])
+        ->apply(function (Field $startDate, Field $endDate): void {
             // call to application/domain service
-        },
-    )->when(static fn(Field ...$fields) => any($fields))
-     ->describe('Update availability period'),
+        })
+        ->when(static fn(Field ...$fields) => any($fields))
+        ->describe('Update availability period'),
 );
 ```
 
@@ -189,12 +186,10 @@ You can also define a custom failure to be rethrown later:
 
 ```php
 $orchestrator->register(
-    Action::from(
-        fields: [$startDate->required(), $endDate->optional()],
-        apply : function (Field $startDate, Field $endDate): void {
+    Action::for([$startDate->required(), $endDate->optional()])
+        ->apply(function (Field $startDate, Field $endDate): void {
             // call to application/domain service
-        },
-    )
+        })
         ->describe('Update availability period')
         ->or(static fn(ActionFailure $failure) => new DomainException(
             message : 'The action contract was not satisfied.',
@@ -226,9 +221,8 @@ By default, an action applies if **at least one field is present**.
 You can define custom rules:
 
 ```php
-Action::from(
-    fields: [$startDate, $endDate],
-    apply : static function (Field $startDate, Field $endDate): void {
+Action::for([$startDate, $endDate])->apply(
+    static function (Field $startDate, Field $endDate): void {
         // ...
     },
 )->when(static fn(Field ...$fields) => all($fields));
@@ -237,9 +231,8 @@ Action::from(
 For the common presence-based cases, you can pass the provided named constructors directly:
 
 ```php
-Action::from(
-    fields: [$startDate, $endDate],
-    apply : static function (Field $startDate, Field $endDate): void {
+Action::for([$startDate, $endDate])->apply(
+    static function (Field $startDate, Field $endDate): void {
         // ...
     },
 )->when(All::isPresent());
@@ -248,9 +241,8 @@ Action::from(
 If the decision was already resolved elsewhere, you can pass the resulting boolean directly:
 
 ```php
-Action::from(
-    fields: [$startDate, $endDate],
-    apply : static function (Field $startDate, Field $endDate): void {
+Action::for([$startDate, $endDate])->apply(
+    static function (Field $startDate, Field $endDate): void {
         // ...
     },
 )->when(Boolean::from($shouldUpdateAvailability));
@@ -259,9 +251,8 @@ Action::from(
 If you want to treat `when(...)` like an inline boolean guard, you can wrap it as a rule:
 
 ```php
-Action::from(
-    fields: [$startDate, $endDate],
-    apply : static function (Field $startDate, Field $endDate): void {
+Action::for([$startDate, $endDate])->apply(
+    static function (Field $startDate, Field $endDate): void {
         // ...
     },
 )->when(Boolean::resolve(
@@ -358,9 +349,8 @@ all([
 Advanced details on how to define custom activation rules.
 
 ```php
-$action = Action::from(
-    fields: [$startDate, $endDate],
-    apply : static function (Field $startDate, Field $endDate): void {
+$action = Action::for([$startDate, $endDate])->apply(
+    static function (Field $startDate, Field $endDate): void {
         // ...
     },
 )->when(All::isPresent());;
