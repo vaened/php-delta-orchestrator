@@ -41,20 +41,34 @@ final readonly class NumericComparator implements Comparator
 
     private function normalize(mixed $value): ?string
     {
+        $value = $this->toComparable($value);
+
+        if ($value === null) {
+            return null;
+        }
+
+        return $this->canonicalize($value);
+    }
+
+    private function toComparable(mixed $value): ?string
+    {
         if (is_int($value)) {
             return (string)$value;
         }
 
         if (is_float($value)) {
-            $value = (string)$value;
+            return (string)$value;
         }
 
         if (!is_string($value)) {
             return null;
         }
 
-        $value = trim($value);
+        return trim($value);
+    }
 
+    private function canonicalize(string $value): ?string
+    {
         if ($value === '' || !is_numeric($value)) {
             return null;
         }
@@ -63,12 +77,7 @@ final readonly class NumericComparator implements Comparator
             return null;
         }
 
-        $sign = '';
-
-        if ($value[0] === '+' || $value[0] === '-') {
-            $sign  = $value[0] === '-' ? '-' : '';
-            $value = substr($value, 1);
-        }
+        [$sign, $value] = $this->split($value);
 
         [$integer, $decimal] = array_pad(explode('.', $value, 2), 2, '');
 
@@ -85,5 +94,17 @@ final readonly class NumericComparator implements Comparator
         }
 
         return $sign . $normalized;
+    }
+
+    private function split(string $value): array
+    {
+        if ($value[0] !== '+' && $value[0] !== '-') {
+            return ['', $value];
+        }
+
+        return [
+            $value[0] === '-' ? '-' : '',
+            substr($value, 1),
+        ];
     }
 }
