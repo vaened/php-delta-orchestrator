@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.3] - 2026-08-07
+
+### Fixed
+
+- Fixed `NumericComparator` so large integer strings no longer compare as equal after float precision loss.
+- Normalized equivalent numeric representations such as `10`, `10.0`, `010.000`, and signed decimal variants before comparison, while keeping unsupported scientific notation rejected.
+
 ## [0.7.2] - 2026-08-04
 
 ### Added
