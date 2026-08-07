@@ -74,6 +74,20 @@ final class ComparatorsTest extends TestCase
         self::assertTrue($comparator->equals('10', 10));
         self::assertTrue($comparator->equals(10, '10'));
         self::assertTrue($comparator->equals('10.5', 10.5));
+        self::assertTrue($comparator->equals('010.000', '10'));
+        self::assertTrue($comparator->equals('+0.5000', '.5'));
+        self::assertTrue($comparator->equals('-0.5000', '-.5'));
+        self::assertTrue($comparator->equals('-10.0', -10));
+        self::assertTrue($comparator->equals('-0.0', 0));
+    }
+
+    public function test_numeric_comparator_preserves_large_integer_precision(): void
+    {
+        $comparator = NumericComparator::create();
+
+        self::assertFalse(
+            $comparator->equals('9007199254740993', '9007199254740992'),
+        );
     }
 
     public function test_numeric_comparator_throws_when_values_are_not_numeric(): void
@@ -83,6 +97,15 @@ final class ComparatorsTest extends TestCase
         $this->expectException(ComparisonTypeMismatch::class);
 
         $comparator->equals('hola', 10);
+    }
+
+    public function test_numeric_comparator_rejects_scientific_notation(): void
+    {
+        $comparator = NumericComparator::create();
+
+        $this->expectException(ComparisonTypeMismatch::class);
+
+        $comparator->equals('1e3', 1000);
     }
 
     public function test_numeric_comparator_handles_nulls_without_exception(): void
