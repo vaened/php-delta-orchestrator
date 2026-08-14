@@ -379,6 +379,10 @@ If none is defined, `StrictComparator` is used.
 
 For numeric values and numeric strings.
 
+`NumericComparator` compares values by numeric meaning instead of raw string or float identity.
+Numeric strings are treated as exact input, while native PHP floats are normalized with a significant-digits tolerance before comparison.
+This keeps values such as `0.1 + 0.2` and `0.3` equivalent, while still allowing fully explicit numeric strings to remain exact.
+
 ```php
 $quantity = Field::from(
     patch  : $payload->quantity,

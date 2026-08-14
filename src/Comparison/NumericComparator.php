@@ -14,7 +14,9 @@ final readonly class NumericComparator implements Comparator
 {
     use HandlesNullComparison;
 
-    private const FLOAT_SCALE = 15;
+    private const FLOAT_SIGNIFICANT_DIGITS = PHP_FLOAT_DIG;
+    private const MAX_EXACT_INTEGER_FLOAT = 2 ** 53;
+    private const MAX_PARSE_EXPONENT = 1000000;
 
     public static function create(): self
     {
@@ -59,7 +61,15 @@ final readonly class NumericComparator implements Comparator
         }
 
         if (is_float($value)) {
-            return sprintf('%.' . self::FLOAT_SCALE . 'F', $value);
+            if (!is_finite($value)) {
+                return null;
+            }
+
+            if ($value === floor($value) && abs($value) <= self::MAX_EXACT_INTEGER_FLOAT) {
+                return sprintf('%.0F', $value);
+            }
+
+            return sprintf('%.' . self::FLOAT_SIGNIFICANT_DIGITS . 'G', $value);
         }
 
         if (!is_string($value)) {
@@ -81,24 +91,25 @@ final readonly class NumericComparator implements Comparator
             return null;
         }
 
-        [$sign, $integer, $decimal, $exponent] = $parts;
-        [$integer, $decimal] = $this->apply($integer, $decimal, $exponent);
+        [$sign, $digits, $exponent] = $parts;
 
-        $integer = ltrim($integer, '0');
-        $integer = $integer === '' ? '0' : $integer;
-        $decimal = rtrim($decimal, '0');
+        $digits = ltrim($digits, '0');
 
-        $normalized = $decimal === ''
-            ? $integer
-            : $integer . '.' . $decimal;
-
-        if ($normalized === '0') {
+        if ($digits === '') {
             return '0';
         }
 
-        return $sign . $normalized;
+        $trailingZeros = strlen($digits) - strlen(rtrim($digits, '0'));
+        $digits        = rtrim($digits, '0');
+        $exponent     += $trailingZeros;
+
+        // Internal canonical token: normalized mantissa digits plus exponent.
+        return $sign . $digits . 'e' . $exponent;
     }
 
+    /**
+     * @return array{0: string, 1: string, 2: int}|null
+     */
     private function parse(string $value): ?array
     {
         $pattern = '/^([+-]?)(?:(\d+)(?:\.(\d*))?|\.(\d+))(?:[eE]([+-]?\d+))?$/';
@@ -107,37 +118,17 @@ final readonly class NumericComparator implements Comparator
             return null;
         }
 
+        $fraction = ($matches[3] ?? '') !== '' ? $matches[3] : ($matches[4] ?? '');
+        $exponent = isset($matches[5]) ? (int)$matches[5] : 0;
+
+        if ($exponent > self::MAX_PARSE_EXPONENT || $exponent < -self::MAX_PARSE_EXPONENT) {
+            return null;
+        }
+
         return [
             $matches[1] === '-' ? '-' : '',
-            ($matches[2] ?? '') !== '' ? $matches[2] : '0',
-            ($matches[3] ?? '') !== '' ? $matches[3] : ($matches[4] ?? ''),
-            isset($matches[5]) ? (int)$matches[5] : 0,
-        ];
-    }
-
-    private function apply(string $integer, string $decimal, int $exponent): array
-    {
-        $digits      = $integer . $decimal;
-        $decimalAt   = strlen($integer) + $exponent;
-        $digitsCount = strlen($digits);
-
-        if ($decimalAt <= 0) {
-            return [
-                '0',
-                str_repeat('0', -$decimalAt) . $digits,
-            ];
-        }
-
-        if ($decimalAt >= $digitsCount) {
-            return [
-                $digits . str_repeat('0', $decimalAt - $digitsCount),
-                '',
-            ];
-        }
-
-        return [
-            substr($digits, 0, $decimalAt),
-            substr($digits, $decimalAt),
+            $matches[2] . $fraction,
+            $exponent - strlen($fraction),
         ];
     }
 }

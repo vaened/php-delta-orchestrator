@@ -10,11 +10,11 @@ namespace Vaened\DeltaOrchestrator\Tests\Unit;
 
 use DateTimeImmutable;
 use Vaened\DeltaOrchestrator\Comparison\ArrayComparator;
-use Vaened\DeltaOrchestrator\Exceptions\ComparisonTypeMismatch;
 use Vaened\DeltaOrchestrator\Comparison\DateTimeComparator;
 use Vaened\DeltaOrchestrator\Comparison\LooseComparator;
 use Vaened\DeltaOrchestrator\Comparison\NumericComparator;
 use Vaened\DeltaOrchestrator\Comparison\StrictComparator;
+use Vaened\DeltaOrchestrator\Exceptions\ComparisonTypeMismatch;
 use Vaened\DeltaOrchestrator\Tests\TestCase;
 
 final class ComparatorsTest extends TestCase
@@ -101,6 +101,37 @@ final class ComparatorsTest extends TestCase
         self::assertTrue($comparator->equals(100000000000000.0, 100000000000000.0));
     }
 
+    public function test_numeric_comparator_keeps_float_and_string_paths_consistent_for_extreme_magnitudes(): void
+    {
+        $comparator = NumericComparator::create();
+
+        self::assertFalse($comparator->equals(1e-20, 0.0));
+        self::assertFalse($comparator->equals(1e-20, 5e-20));
+        self::assertTrue($comparator->equals(1e25, '1e25'));
+        self::assertTrue($comparator->equals('1e25', '10000000000000000000000000'));
+    }
+
+    public function test_numeric_comparator_treats_float_precision_as_a_compatibility_tolerance(): void
+    {
+        $comparator = NumericComparator::create();
+
+        self::assertTrue($comparator->equals(1e15 + 1, '1000000000000001'));
+        self::assertTrue($comparator->equals(0.1 + 0.2, '0.3'));
+        self::assertFalse($comparator->equals(0.1 + 0.2, '0.30000000000000004'));
+        self::assertFalse($comparator->equals('0.30000000000000004', '0.3'));
+    }
+
+    public function test_numeric_comparator_preserves_exact_integer_floats_without_applying_tolerance(): void
+    {
+        $comparator = NumericComparator::create();
+
+        self::assertTrue($comparator->equals(1000000000000001.0, 1000000000000001));
+        self::assertFalse($comparator->equals(1000000000000001.0, 1000000000000002.0));
+        self::assertTrue($comparator->equals((float)(2 ** 53 - 1), '9007199254740991'));
+        self::assertTrue($comparator->equals((float)(2 ** 53), '9007199254740992'));
+        self::assertFalse($comparator->equals((float)(2 ** 53 + 1), '9007199254740993'));
+    }
+
     public function test_numeric_comparator_is_not_affected_by_php_precision_for_native_floats(): void
     {
         $comparator        = NumericComparator::create();
@@ -133,6 +164,44 @@ final class ComparatorsTest extends TestCase
         $this->expectException(ComparisonTypeMismatch::class);
 
         $comparator->equals('1e', 1000);
+    }
+
+    public function test_numeric_comparator_rejects_unreasonably_large_exponents(): void
+    {
+        $comparator = NumericComparator::create();
+
+        $this->expectException(ComparisonTypeMismatch::class);
+
+        $comparator->equals('1e2000000', '0');
+    }
+
+    public function test_numeric_comparator_rejects_non_finite_floats(): void
+    {
+        $comparator = NumericComparator::create();
+
+        $this->expectException(ComparisonTypeMismatch::class);
+        $this->expectExceptionMessage(
+            'Numeric comparison requires int, finite float, or numeric string values. Got <float> and <int>.',
+        );
+
+        $comparator->equals(INF, 1);
+    }
+
+    public function test_numeric_comparator_rejects_nan(): void
+    {
+        $comparator = NumericComparator::create();
+
+        $this->expectException(ComparisonTypeMismatch::class);
+
+        $comparator->equals(NAN, 1);
+    }
+
+    public function test_numeric_comparator_treats_negative_zero_as_zero(): void
+    {
+        $comparator = NumericComparator::create();
+
+        self::assertTrue($comparator->equals(-0.0, 0.0));
+        self::assertTrue($comparator->equals('-0', '0'));
     }
 
     public function test_numeric_comparator_handles_nulls_without_exception(): void
