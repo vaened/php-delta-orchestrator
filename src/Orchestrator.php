@@ -85,10 +85,7 @@ final class Orchestrator
             $rule = $when(...$fields);
 
             if (!$rule instanceof Rule) {
-                throw new InvalidActionDefinition(
-                    reason     : 'Action when condition must return a Rule',
-                    description: $action->description(),
-                );
+                throw InvalidActionDefinition::unexpectedWhenResult($action->description());
             }
 
             return $rule->satisfies();

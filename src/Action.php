@@ -32,10 +32,7 @@ final class Action
     )
     {
         if ($this->fields === []) {
-            throw new InvalidActionDefinition(
-                reason     : 'Action fields cannot be empty',
-                description: $this->description,
-            );
+            throw InvalidActionDefinition::emptyFields($this->description);
         }
     }
 

@@ -10,7 +10,7 @@ namespace Vaened\DeltaOrchestrator\Exceptions;
 
 final class InvalidActionDefinition extends DeltaOrchestratorException
 {
-    public function __construct(
+    private function __construct(
         string  $reason,
         ?string $description = null,
     )
@@ -19,6 +19,22 @@ final class InvalidActionDefinition extends DeltaOrchestratorException
             $description !== null
                 ? "Invalid action definition: $reason ($description)."
                 : "Invalid action definition: $reason.",
+        );
+    }
+
+    public static function emptyFields(?string $description = null): self
+    {
+        return new self(
+            reason     : 'Action fields cannot be empty',
+            description: $description,
+        );
+    }
+
+    public static function unexpectedWhenResult(?string $description = null): self
+    {
+        return new self(
+            reason     : 'Action when condition must return a Rule',
+            description: $description,
         );
     }
 }

@@ -19,7 +19,7 @@ final class ExceptionsTest extends TestCase
 {
     public function test_invalid_action_definition_builds_message_without_description(): void
     {
-        $exception = new InvalidActionDefinition('Action fields cannot be empty');
+        $exception = InvalidActionDefinition::emptyFields();
 
         self::assertSame(
             'Invalid action definition: Action fields cannot be empty.',
@@ -29,13 +29,20 @@ final class ExceptionsTest extends TestCase
 
     public function test_invalid_action_definition_builds_message_with_description(): void
     {
-        $exception = new InvalidActionDefinition(
-            reason     : 'Action fields cannot be empty',
-            description: 'Update user profile',
-        );
+        $exception = InvalidActionDefinition::emptyFields('Update user profile');
 
         self::assertSame(
             'Invalid action definition: Action fields cannot be empty (Update user profile).',
+            $exception->getMessage(),
+        );
+    }
+
+    public function test_invalid_action_definition_builds_when_result_message(): void
+    {
+        $exception = InvalidActionDefinition::unexpectedWhenResult('Update user profile');
+
+        self::assertSame(
+            'Invalid action definition: Action when condition must return a Rule (Update user profile).',
             $exception->getMessage(),
         );
     }
