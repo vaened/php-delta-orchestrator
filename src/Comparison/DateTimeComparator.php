@@ -30,26 +30,41 @@ final readonly class DateTimeComparator implements Comparator
             return $equals;
         }
 
-        $value   = $this->normalize($value, $current);
-        $current = $this->normalize($current, $value);
+        [$value, $current] = $this->build($value, $current);
 
         return $value->format('U.u') === $current->format('U.u');
     }
 
-    private function normalize(mixed $value, mixed $other): DateTimeInterface
+    private function build(mixed $value, mixed $current): array
+    {
+        $resolvedValue   = $this->resolve($value);
+        $resolvedCurrent = $this->resolve($current);
+
+        if ($resolvedValue === null || $resolvedCurrent === null) {
+            throw ComparisonTypeMismatch::forDateTime($value, $current);
+        }
+
+        return [$resolvedValue, $resolvedCurrent];
+    }
+
+    private function resolve(mixed $value): ?DateTimeInterface
     {
         if ($value instanceof DateTimeInterface) {
             return $value;
         }
 
-        if (is_string($value)) {
-            try {
-                return new DateTimeImmutable($value);
-            } catch (Exception) {
-                throw ComparisonTypeMismatch::forDateTime($value, $other);
-            }
-        }
+        return match (true) {
+            is_string($value) => $this->fromString($value),
+            default           => null,
+        };
+    }
 
-        throw ComparisonTypeMismatch::forDateTime($value, $other);
+    private function fromString(string $value): ?DateTimeInterface
+    {
+        try {
+            return new DateTimeImmutable($value);
+        } catch (Exception) {
+            return null;
+        }
     }
 }

@@ -191,6 +191,21 @@ final class ComparatorsTest extends TestCase
         $comparator->equals('not-a-date', 10);
     }
 
+    public function test_datetime_comparator_preserves_value_current_order_in_error_messages(): void
+    {
+        $comparator = DateTimeComparator::create();
+
+        try {
+            $comparator->equals('2026-01-01', 12345);
+            self::fail('Expected ComparisonTypeMismatch to be thrown.');
+        } catch (ComparisonTypeMismatch $exception) {
+            self::assertSame(
+                'DateTime comparison requires DateTimeInterface or parseable date strings. Got <string> and <int>.',
+                $exception->getMessage(),
+            );
+        }
+    }
+
     public function test_datetime_comparator_handles_nulls_without_exception(): void
     {
         $comparator = DateTimeComparator::create();
