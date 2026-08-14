@@ -76,7 +76,19 @@ final class PatchInputTest extends TestCase
         );
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid array patch value [admin].');
+        $this->expectExceptionMessage('Invalid array patch value [string].');
+
+        $input->array('roles');
+    }
+
+    public function test_it_throws_when_array_input_receives_a_non_stringifiable_object(): void
+    {
+        $input = new PatchInput(
+            input: ['roles' => new \stdClass()],
+        );
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid array patch value [stdClass].');
 
         $input->array('roles');
     }

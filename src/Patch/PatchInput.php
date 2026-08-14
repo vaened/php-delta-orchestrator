@@ -93,7 +93,7 @@ final readonly class PatchInput
         $value = $this->value($key);
 
         if ($value !== null && !is_array($value)) {
-            throw new InvalidArgumentException(sprintf('Invalid array patch value [%s].', $value));
+            throw new InvalidArgumentException(sprintf('Invalid array patch value [%s].', get_debug_type($value)));
         }
 
         return new ArrayPatchValue(
