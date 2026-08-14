@@ -212,6 +212,9 @@ fields: [
 * `required()` → the field must provide a usable value
 * `optional()` → the field may be absent
 
+By default, a plain `Field` behaves as `required()`.
+Use `required()` when you want to make that intent explicit, and `optional()` when absence should be allowed.
+
 #### Activation rule (`when`)
 
 `when` determines whether the action participates in the current patch.
