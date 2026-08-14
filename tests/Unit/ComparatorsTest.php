@@ -170,6 +170,7 @@ final class ComparatorsTest extends TestCase
         self::assertFalse($comparator->equals($value, $other));
         self::assertTrue($comparator->equals('2026-04-26 10:20:30', $current));
         self::assertTrue($comparator->equals('2026-04-26 10:20:30', '2026-04-26 10:20:30'));
+        self::assertTrue($comparator->equals(1714126830, '2024-04-26 10:20:30+00:00'));
     }
 
     public function test_datetime_comparator_treats_same_instant_with_different_timezones_as_equal(): void
@@ -196,14 +197,23 @@ final class ComparatorsTest extends TestCase
         $comparator = DateTimeComparator::create();
 
         try {
-            $comparator->equals('2026-01-01', 12345);
+            $comparator->equals('2026-01-01', true);
             self::fail('Expected ComparisonTypeMismatch to be thrown.');
         } catch (ComparisonTypeMismatch $exception) {
             self::assertSame(
-                'DateTime comparison requires DateTimeInterface or parseable date strings. Got <string> and <int>.',
+                'DateTime comparison requires DateTimeInterface or parseable date strings. Got <string> and <bool>.',
                 $exception->getMessage(),
             );
         }
+    }
+
+    public function test_datetime_comparator_rejects_float_timestamps(): void
+    {
+        $comparator = DateTimeComparator::create();
+
+        $this->expectException(ComparisonTypeMismatch::class);
+
+        $comparator->equals(1715126830.25, '2024-05-08 00:07:10.250000+00:00');
     }
 
     public function test_datetime_comparator_handles_nulls_without_exception(): void

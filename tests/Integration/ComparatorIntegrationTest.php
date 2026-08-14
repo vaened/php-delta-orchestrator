@@ -115,4 +115,27 @@ final class ComparatorIntegrationTest extends TestCase
 
         self::assertFalse($executed);
     }
+
+    public function test_datetime_comparator_skips_execution_when_unix_timestamp_matches_date(): void
+    {
+        $field = $this->singleValueField(
+            value  : new DateTimeImmutablePatchValue(true, '2026-04-26 10:20:30'),
+            current: 1777198830,
+            compare: DateTimeComparator::create(),
+        );
+
+        $executed = false;
+
+        $action = new Action(
+            fields: [$field],
+            apply : static function (Field ...$fields) use (&$executed): void {
+                $executed = true;
+            },
+            when  : null,
+        );
+
+        (new Orchestrator())->register($action)->execute();
+
+        self::assertFalse($executed);
+    }
 }

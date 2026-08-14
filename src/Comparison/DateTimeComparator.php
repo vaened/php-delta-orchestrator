@@ -55,6 +55,7 @@ final readonly class DateTimeComparator implements Comparator
 
         return match (true) {
             is_string($value) => $this->fromString($value),
+            is_int($value) => $this->fromTimestamp($value),
             default           => null,
         };
     }
@@ -63,6 +64,15 @@ final readonly class DateTimeComparator implements Comparator
     {
         try {
             return new DateTimeImmutable($value);
+        } catch (Exception) {
+            return null;
+        }
+    }
+
+    private function fromTimestamp(int $value): ?DateTimeInterface
+    {
+        try {
+            return new DateTimeImmutable('@' . $value);
         } catch (Exception) {
             return null;
         }
