@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.1] - 2026-08-14
+
+### Changed
+
+- `NumericComparator` now treats exact-integer floats up to `2^53` without applying float tolerance, while keeping significant-digits
+  tolerance for fractional float arithmetic.
+- Documented the final comparison semantics of `NumericComparator`, including exact numeric strings and tolerant native float handling.
+
+### Fixed
+
+- `NumericComparator` now uses a compact canonical numeric form instead of decimal expansion, preventing exponent-driven memory blowups
+  and keeping extreme scientific values comparable without exhausting memory.
+- `NumericComparator` now preserves comparisons across very small and very large magnitudes more consistently between float and numeric
+  string inputs, while rejecting non-finite floats explicitly.
+- `PatchInput::array(...)` now reports invalid values by type instead of crashing when the input cannot be stringified for the error
+  message.
+
+### Refactored
+
+- Added `InvalidPatchValue` as the package-owned exception for invalid patch inputs and normalization failures across built-in patch
+  value types.
+- Replaced ad-hoc `InvalidActionDefinition` reasons with named constructors for empty field definitions and unexpected `when(...)`
+  results.
+
 ## [0.8.0] - 2026-08-14
 
 ### Added
