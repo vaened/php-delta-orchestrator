@@ -79,6 +79,9 @@ final class ComparatorsTest extends TestCase
         self::assertTrue($comparator->equals('-0.5000', '-.5'));
         self::assertTrue($comparator->equals('-10.0', -10));
         self::assertTrue($comparator->equals('-0.0', 0));
+        self::assertTrue($comparator->equals('1e3', 1000));
+        self::assertTrue($comparator->equals('1E-5', '0.00001'));
+        self::assertTrue($comparator->equals('+12.34e-2', '.1234'));
     }
 
     public function test_numeric_comparator_preserves_large_integer_precision(): void
@@ -90,6 +93,30 @@ final class ComparatorsTest extends TestCase
         );
     }
 
+    public function test_numeric_comparator_accepts_native_floats_that_php_renders_in_scientific_notation(): void
+    {
+        $comparator = NumericComparator::create();
+
+        self::assertTrue($comparator->equals(0.00001, 0.00001));
+        self::assertTrue($comparator->equals(100000000000000.0, 100000000000000.0));
+    }
+
+    public function test_numeric_comparator_is_not_affected_by_php_precision_for_native_floats(): void
+    {
+        $comparator        = NumericComparator::create();
+        $originalPrecision = ini_get('precision');
+
+        try {
+            ini_set('precision', '17');
+
+            self::assertTrue($comparator->equals(0.1 + 0.2, 0.3));
+        } finally {
+            if ($originalPrecision !== false) {
+                ini_set('precision', (string)$originalPrecision);
+            }
+        }
+    }
+
     public function test_numeric_comparator_throws_when_values_are_not_numeric(): void
     {
         $comparator = NumericComparator::create();
@@ -99,13 +126,13 @@ final class ComparatorsTest extends TestCase
         $comparator->equals('hola', 10);
     }
 
-    public function test_numeric_comparator_rejects_scientific_notation(): void
+    public function test_numeric_comparator_rejects_malformed_scientific_notation(): void
     {
         $comparator = NumericComparator::create();
 
         $this->expectException(ComparisonTypeMismatch::class);
 
-        $comparator->equals('1e3', 1000);
+        $comparator->equals('1e', 1000);
     }
 
     public function test_numeric_comparator_handles_nulls_without_exception(): void

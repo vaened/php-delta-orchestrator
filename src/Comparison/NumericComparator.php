@@ -14,6 +14,8 @@ final readonly class NumericComparator implements Comparator
 {
     use HandlesNullComparison;
 
+    private const FLOAT_SCALE = 15;
+
     public static function create(): self
     {
         return new self();
@@ -57,7 +59,7 @@ final readonly class NumericComparator implements Comparator
         }
 
         if (is_float($value)) {
-            return (string)$value;
+            return sprintf('%.' . self::FLOAT_SCALE . 'F', $value);
         }
 
         if (!is_string($value)) {
@@ -69,17 +71,18 @@ final readonly class NumericComparator implements Comparator
 
     private function canonicalize(string $value): ?string
     {
-        if ($value === '' || !is_numeric($value)) {
+        if ($value === '') {
             return null;
         }
 
-        if (str_contains($value, 'e') || str_contains($value, 'E')) {
+        $parts = $this->parse($value);
+
+        if ($parts === null) {
             return null;
         }
 
-        [$sign, $value] = $this->split($value);
-
-        [$integer, $decimal] = array_pad(explode('.', $value, 2), 2, '');
+        [$sign, $integer, $decimal, $exponent] = $parts;
+        [$integer, $decimal] = $this->apply($integer, $decimal, $exponent);
 
         $integer = ltrim($integer, '0');
         $integer = $integer === '' ? '0' : $integer;
@@ -96,15 +99,45 @@ final readonly class NumericComparator implements Comparator
         return $sign . $normalized;
     }
 
-    private function split(string $value): array
+    private function parse(string $value): ?array
     {
-        if ($value[0] !== '+' && $value[0] !== '-') {
-            return ['', $value];
+        $pattern = '/^([+-]?)(?:(\d+)(?:\.(\d*))?|\.(\d+))(?:[eE]([+-]?\d+))?$/';
+
+        if (preg_match($pattern, $value, $matches) !== 1) {
+            return null;
         }
 
         return [
-            $value[0] === '-' ? '-' : '',
-            substr($value, 1),
+            $matches[1] === '-' ? '-' : '',
+            ($matches[2] ?? '') !== '' ? $matches[2] : '0',
+            ($matches[3] ?? '') !== '' ? $matches[3] : ($matches[4] ?? ''),
+            isset($matches[5]) ? (int)$matches[5] : 0,
+        ];
+    }
+
+    private function apply(string $integer, string $decimal, int $exponent): array
+    {
+        $digits      = $integer . $decimal;
+        $decimalAt   = strlen($integer) + $exponent;
+        $digitsCount = strlen($digits);
+
+        if ($decimalAt <= 0) {
+            return [
+                '0',
+                str_repeat('0', -$decimalAt) . $digits,
+            ];
+        }
+
+        if ($decimalAt >= $digitsCount) {
+            return [
+                $digits . str_repeat('0', $decimalAt - $digitsCount),
+                '',
+            ];
+        }
+
+        return [
+            substr($digits, 0, $decimalAt),
+            substr($digits, $decimalAt),
         ];
     }
 }
