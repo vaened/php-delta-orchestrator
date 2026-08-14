@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2026-08-14
+
+### Added
+
+- Added Unix timestamp support to `DateTimeComparator` for integer values, so existing timestamps can be compared directly against
+  `DateTimeInterface` instances and parseable datetime strings.
+
+### Changed
+
+- Clarified in the README that a plain `Field` behaves as `required()` by default, while `optional()` must be selected explicitly when
+  absence should be allowed.
+
+### Fixed
+
+- Expanded `NumericComparator` to accept valid scientific numeric strings while still preserving exact comparison for large integer
+  strings and consistent handling of native float values.
+- `PatchInput::array(...)` now throws on invalid non-array input instead of silently degrading present values to `null`.
+- `Orchestrator` now rejects `when(...)` callbacks that do not return a `Rule` with `InvalidActionDefinition` instead of crashing with a
+  raw PHP error.
+- `DateTimeComparator` now reports type mismatch errors in the same `value, current` parameter order used by `equals(...)`.
+
 ## [0.7.3] - 2026-08-07
 
 ### Fixed
