@@ -10,6 +10,8 @@ namespace Vaened\DeltaOrchestrator;
 
 use Vaened\DeltaOrchestrator\Bindings\Behavior;
 use Vaened\DeltaOrchestrator\Exceptions\ActionBehaviorNotSatisfied;
+use Vaened\DeltaOrchestrator\Exceptions\InvalidActionDefinition;
+use Vaened\DeltaOrchestrator\Rules\Rule;
 
 use function array_map;
 use function call_user_func;
@@ -81,6 +83,13 @@ final class Orchestrator
 
         if ($when !== null) {
             $rule = $when(...$fields);
+
+            if (!$rule instanceof Rule) {
+                throw new InvalidActionDefinition(
+                    reason     : 'Action when condition must return a Rule',
+                    description: $action->description(),
+                );
+            }
 
             return $rule->satisfies();
         }

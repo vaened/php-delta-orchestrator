@@ -13,6 +13,7 @@ use Vaened\DeltaOrchestrator\Action;
 use Vaened\DeltaOrchestrator\ActionFailure;
 use Vaened\DeltaOrchestrator\Bindings\Behavior;
 use Vaened\DeltaOrchestrator\Exceptions\ActionBehaviorNotSatisfied;
+use Vaened\DeltaOrchestrator\Exceptions\InvalidActionDefinition;
 use Vaened\DeltaOrchestrator\Field;
 use Vaened\DeltaOrchestrator\Orchestrator;
 use Vaened\DeltaOrchestrator\Rules\Rule;
@@ -179,5 +180,23 @@ final class OrchestratorTest extends TestCase
                 self::assertSame($exception, $custom->getPrevious());
             }
         }
+    }
+
+    public function test_it_throws_invalid_action_definition_when_when_does_not_return_a_rule(): void
+    {
+        $action = Action::from(
+            fields: [$this->field(value: 'Juan', current: 'Pedro', present: true)],
+            apply : static function (Field ...$fields): void {
+            },
+        )
+            ->describe('Update user profile')
+            ->when(static fn(Field $field): bool => true);
+
+        $this->expectException(InvalidActionDefinition::class);
+        $this->expectExceptionMessage(
+            'Invalid action definition: Action when condition must return a Rule (Update user profile).',
+        );
+
+        (new Orchestrator())->register($action)->execute();
     }
 }
