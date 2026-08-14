@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Vaened\DeltaOrchestrator\Tests\Unit;
 
 use DateTimeImmutable;
+use InvalidArgumentException;
 use Vaened\DeltaOrchestrator\Patch\PatchInput;
 use Vaened\DeltaOrchestrator\Tests\TestCase;
 
@@ -66,5 +67,17 @@ final class PatchInputTest extends TestCase
         self::assertTrue($input->bool('enabled')->value());
         self::assertInstanceOf(DateTimeImmutable::class, $input->dateTimeImmutable('startDate')->value());
         self::assertSame(['admin', 'editor'], $input->array('roles')->value());
+    }
+
+    public function test_it_throws_when_array_input_receives_a_non_array_value(): void
+    {
+        $input = new PatchInput(
+            input: ['roles' => 'admin'],
+        );
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid array patch value [admin].');
+
+        $input->array('roles');
     }
 }

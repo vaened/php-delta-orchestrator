@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace Vaened\DeltaOrchestrator\Patch;
 
+use InvalidArgumentException;
+
 /**
  * @template TInput of array<string, mixed>
  */
@@ -90,9 +92,13 @@ final readonly class PatchInput
     {
         $value = $this->value($key);
 
+        if ($value !== null && !is_array($value)) {
+            throw new InvalidArgumentException(sprintf('Invalid array patch value [%s].', $value));
+        }
+
         return new ArrayPatchValue(
             present: $this->isPresent($key),
-            value  : is_array($value) ? $value : null,
+            value  : $value,
         );
     }
 
