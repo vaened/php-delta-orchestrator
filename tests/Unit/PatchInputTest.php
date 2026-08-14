@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Vaened\DeltaOrchestrator\Tests\Unit;
 
 use DateTimeImmutable;
-use InvalidArgumentException;
+use Vaened\DeltaOrchestrator\Exceptions\InvalidPatchValue;
 use Vaened\DeltaOrchestrator\Patch\PatchInput;
 use Vaened\DeltaOrchestrator\Tests\TestCase;
 
@@ -75,7 +75,7 @@ final class PatchInputTest extends TestCase
             input: ['roles' => 'admin'],
         );
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidPatchValue::class);
         $this->expectExceptionMessage('Invalid array patch value [string].');
 
         $input->array('roles');
@@ -87,7 +87,7 @@ final class PatchInputTest extends TestCase
             input: ['roles' => new \stdClass()],
         );
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidPatchValue::class);
         $this->expectExceptionMessage('Invalid array patch value [stdClass].');
 
         $input->array('roles');

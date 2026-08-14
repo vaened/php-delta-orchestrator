@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Vaened\DeltaOrchestrator\Patch;
 
-use InvalidArgumentException;
+use Vaened\DeltaOrchestrator\Exceptions\InvalidPatchValue;
 
 /**
  * @extends NormalizablePatchValue<int|null>
@@ -36,7 +36,7 @@ final readonly class IntPatchValue extends NormalizablePatchValue
         );
 
         if ($normalized === false) {
-            throw new InvalidArgumentException(sprintf('Invalid int patch value [%s].', $value));
+            throw InvalidPatchValue::forInt($value);
         }
 
         return $normalized;

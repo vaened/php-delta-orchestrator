@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Vaened\DeltaOrchestrator\Patch;
 
-use InvalidArgumentException;
+use Vaened\DeltaOrchestrator\Exceptions\InvalidPatchValue;
 
 /**
  * @extends NormalizablePatchValue<float|null>
@@ -36,7 +36,7 @@ final readonly class FloatPatchValue extends NormalizablePatchValue
         $normalized = filter_var($value, FILTER_VALIDATE_FLOAT);
 
         if ($normalized === false) {
-            throw new InvalidArgumentException(sprintf('Invalid float patch value [%s].', $value));
+            throw InvalidPatchValue::forFloat($value);
         }
 
         return $normalized;

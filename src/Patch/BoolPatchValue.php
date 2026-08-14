@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Vaened\DeltaOrchestrator\Patch;
 
-use InvalidArgumentException;
+use Vaened\DeltaOrchestrator\Exceptions\InvalidPatchValue;
 
 /**
  * @extends NormalizablePatchValue<bool|null>
@@ -32,7 +32,7 @@ final readonly class BoolPatchValue extends NormalizablePatchValue
         $normalized = filter_var($value, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
 
         if ($normalized === null) {
-            throw new InvalidArgumentException(sprintf('Invalid bool patch value [%s].', (string)$value));
+            throw InvalidPatchValue::forBool($value);
         }
 
         return $normalized;

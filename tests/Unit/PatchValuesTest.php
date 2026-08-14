@@ -10,8 +10,8 @@ namespace Vaened\DeltaOrchestrator\Tests\Unit;
 
 use DateTime;
 use DateTimeImmutable;
-use InvalidArgumentException;
 use Stringable;
+use Vaened\DeltaOrchestrator\Exceptions\InvalidPatchValue;
 use Vaened\DeltaOrchestrator\Patch\ArrayPatchValue;
 use Vaened\DeltaOrchestrator\Patch\BoolPatchValue;
 use Vaened\DeltaOrchestrator\Patch\DateTimeImmutablePatchValue;
@@ -44,7 +44,7 @@ final class PatchValuesTest extends TestCase
 
     public function test_it_rejects_invalid_int_patch_values(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidPatchValue::class);
 
         new IntPatchValue(true, '10.5');
     }
@@ -57,7 +57,7 @@ final class PatchValuesTest extends TestCase
 
     public function test_it_rejects_invalid_float_patch_values(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidPatchValue::class);
 
         new FloatPatchValue(true, 'hola');
     }
@@ -72,7 +72,7 @@ final class PatchValuesTest extends TestCase
 
     public function test_it_rejects_invalid_bool_patch_values(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidPatchValue::class);
 
         new BoolPatchValue(true, 'hola');
     }
@@ -89,7 +89,7 @@ final class PatchValuesTest extends TestCase
 
     public function test_it_rejects_invalid_datetime_patch_values(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidPatchValue::class);
 
         new DateTimeImmutablePatchValue(true, 'no-date');
     }

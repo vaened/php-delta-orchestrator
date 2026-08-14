@@ -11,7 +11,7 @@ namespace Vaened\DeltaOrchestrator\Patch;
 use DateTimeInterface;
 use DateTimeImmutable;
 use Exception;
-use InvalidArgumentException;
+use Vaened\DeltaOrchestrator\Exceptions\InvalidPatchValue;
 
 /**
  * @extends NormalizablePatchValue<DateTimeImmutable|null>
@@ -43,7 +43,7 @@ final readonly class DateTimeImmutablePatchValue extends NormalizablePatchValue
         try {
             return new DateTimeImmutable($value);
         } catch (Exception) {
-            throw new InvalidArgumentException(sprintf('Invalid datetime patch value [%s].', $value));
+            throw InvalidPatchValue::forDateTime($value);
         }
     }
 }

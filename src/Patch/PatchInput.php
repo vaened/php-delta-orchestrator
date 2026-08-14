@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Vaened\DeltaOrchestrator\Patch;
 
-use InvalidArgumentException;
+use Vaened\DeltaOrchestrator\Exceptions\InvalidPatchValue;
 
 /**
  * @template TInput of array<string, mixed>
@@ -93,7 +93,7 @@ final readonly class PatchInput
         $value = $this->value($key);
 
         if ($value !== null && !is_array($value)) {
-            throw new InvalidArgumentException(sprintf('Invalid array patch value [%s].', get_debug_type($value)));
+            throw InvalidPatchValue::forArray($value);
         }
 
         return new ArrayPatchValue(
