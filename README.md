@@ -22,8 +22,9 @@ $endDate = Field::from(
 $orchestrator = new Orchestrator();
 
 $orchestrator->register(
+    // this action runs only if it applies, its contract is satisfied,
+    // and there is an effective delta
     Action::for([$startDate, $endDate])
-        // runs only if the action applies, contract is satisfied, and there is an effective delta
         ->apply(function (Field $startDate, Field $endDate): void {
             // use $field->delta(), $field->value(), $field->current()
         }),
